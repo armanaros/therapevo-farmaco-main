@@ -1,3 +1,7 @@
+/**
+ * Resize an image file to a max dimension while maintaining aspect ratio.
+ * Returns a base64 data URL string ready to store in Firestore.
+ */
 export const resizeImage = (file, maxSize = 400, quality = 0.7) => {
   return new Promise((resolve, reject) => {
     const img = new Image();

@@ -7,11 +7,13 @@ const getAudioContext = () => {
   return audioContext;
 };
 
+// Regular in-house order: two-tone chime
 export const playNotificationSound = () => {
   try {
     const ctx = getAudioContext();
     const now = ctx.currentTime;
 
+    // Two-tone chime
     [520, 660].forEach((freq, i) => {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
