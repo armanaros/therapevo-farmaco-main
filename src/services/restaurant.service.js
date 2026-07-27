@@ -27,22 +27,12 @@ export const getRestaurants = async () => {
 
 export const upsertRestaurant = async (id, data) => {
 	if (!id) throw new Error('restaurant id required');
-	await setDoc(
-		doc(db, RESTAURANTS, id),
-		{
-			...data,
-			updatedAt: serverTimestamp(),
-		},
-		{ merge: true }
-	);
+	await setDoc(doc(db, RESTAURANTS, id), { ...data, updatedAt: serverTimestamp() }, { merge: true });
 };
 
 export const updateRestaurant = async (id, data) => {
 	if (!id) throw new Error('restaurant id required');
-	await updateDoc(doc(db, RESTAURANTS, id), {
-		...data,
-		updatedAt: serverTimestamp(),
-	});
+	await updateDoc(doc(db, RESTAURANTS, id), { ...data, updatedAt: serverTimestamp() });
 };
 
 export const subscribeToRestaurant = (id, callback) => {
