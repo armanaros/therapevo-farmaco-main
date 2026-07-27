@@ -77,7 +77,7 @@ export default function UsersPage() {
     );
   }, [users, search]);
 
-  // ── Create ──────────────────────────────────────────────────────────────────────
+  // ── Create ────────────────────────────────────────────────────────────────────────────
   const handleCreate = async (e) => {
     e.preventDefault();
     setCreating(true);
@@ -93,7 +93,7 @@ export default function UsersPage() {
     }
   };
 
-  // ── Edit ────────────────────────────────────────────────────────────────────────
+  // ── Edit ──────────────────────────────────────────────────────────────────────────────
   const openEdit = (u) => {
     setEditTarget(u);
     setEditForm({
@@ -118,7 +118,7 @@ export default function UsersPage() {
     }
   };
 
-  // ── Toggle active ──────────────────────────────────────────────────────────────────
+  // ── Toggle active ────────────────────────────────────────────────────────────────────
   const handleToggleActive = async (u) => {
     const next = u.isActive === false ? true : false;
     try {
@@ -129,7 +129,7 @@ export default function UsersPage() {
     }
   };
 
-  // ── Delete ───────────────────────────────────────────────────────────────────────
+  // ── Delete ───────────────────────────────────────────────────────────────────────────
   const handleDelete = async () => {
     if (demoBlock()) { setDeleteTarget(null); return; }
     try {
