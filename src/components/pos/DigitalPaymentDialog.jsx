@@ -1,21 +1,17 @@
-import { useState } from 'react';
 import {
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
   Button,
-  Box,
   Typography,
-  Stack,
-  Paper,
-  Chip,
+  Box,
+  TextField,
+  Divider,
 } from '@mui/material';
 import { CheckCircle, PhoneAndroid, AccountBalance, Print as PrintIcon } from '@mui/icons-material';
-import { useState as useStateInner, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { formatCurrency } from '@/utils/formatters';
-import { TextField } from '@mui/material';
-import { Divider } from '@mui/material';
 
 const METHOD_CONFIG = {
   gcash: {
@@ -66,6 +62,7 @@ const DigitalPaymentDialog = ({ open, onClose, orderTotal, paymentMethod, onPrin
       </DialogTitle>
 
       <DialogContent>
+        {/* Amount + icon */}
         <Box
           sx={{
             mt: 1.5,
@@ -95,6 +92,7 @@ const DigitalPaymentDialog = ({ open, onClose, orderTotal, paymentMethod, onPrin
 
         <Divider sx={{ mb: 2 }} />
 
+        {/* Reference number */}
         <TextField
           label={cfg.refLabel}
           value={refNumber}

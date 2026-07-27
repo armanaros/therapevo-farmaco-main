@@ -20,6 +20,7 @@ const MenuBrowser = ({ menu, onAddItem }) => {
     ),
   })).filter((cat) => cat.items.length > 0);
 
+  // "All" tab shows every item across all categories
   const allItems = filteredMenu.flatMap((cat) => cat.items);
   const isAllTab = selectedTab === 0;
   const currentCategory = isAllTab ? null : filteredMenu[selectedTab - 1];
@@ -27,6 +28,7 @@ const MenuBrowser = ({ menu, onAddItem }) => {
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+      {/* Search */}
       <Box sx={{ px: 2, pt: 2, pb: 1 }}>
         <SearchInput
           value={search}
@@ -35,6 +37,7 @@ const MenuBrowser = ({ menu, onAddItem }) => {
         />
       </Box>
 
+      {/* Category tabs */}
       <Tabs
         value={Math.min(selectedTab, filteredMenu.length)}
         onChange={(_, v) => setSelectedTab(v)}
@@ -52,6 +55,7 @@ const MenuBrowser = ({ menu, onAddItem }) => {
         ))}
       </Tabs>
 
+      {/* Items grid */}
       <Box sx={{ flex: 1, overflow: 'auto', px: 2, py: 1 }}>
         {displayItems.length > 0 ? (
           <Grid container spacing={1.5}>
