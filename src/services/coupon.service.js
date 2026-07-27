@@ -68,11 +68,7 @@ export const validateCoupon = (code, coupons) => {
 
 export const calculateDiscount = (coupon, subtotal) => {
   if (!coupon || !subtotal) return 0;
-  if (coupon.type === 'percent') {
-    return Math.round((subtotal * (coupon.value / 100)) * 100) / 100;
-  }
-  if (coupon.type === 'fixed') {
-    return Math.min(subtotal, Number(coupon.value));
-  }
+  if (coupon.type === 'percent') return Math.round((subtotal * (coupon.value / 100)) * 100) / 100;
+  if (coupon.type === 'fixed') return Math.min(subtotal, Number(coupon.value));
   return 0;
 };
