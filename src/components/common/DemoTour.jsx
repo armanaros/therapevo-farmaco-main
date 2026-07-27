@@ -5,8 +5,8 @@ import { Close, ArrowForward, ArrowBack, TipsAndUpdates } from '@mui/icons-mater
 
 const TOUR_STEPS = [
   {
-    title: 'Welcome to P-Town POS! 👋',
-    body: "This is a live demo — all data is pre-loaded so you can explore every feature. We'll walk you through the key sections in about 2 minutes.",
+    title: 'Welcome to P-Town POS! \uD83D\uDC4B',
+    body: "This is a live demo \u2014 all data is pre-loaded so you can explore every feature. We'll walk you through the key sections in about 2 minutes.",
     route: '/dashboard',
   },
   {
@@ -16,17 +16,17 @@ const TOUR_STEPS = [
   },
   {
     title: 'Point of Sale (POS)',
-    body: 'Tap items to add them to the cart, apply coupons, split bills, and print receipts — all from one screen. Works on tablets and phones.',
+    body: 'Tap items to add them to the cart, apply coupons, split bills, and print receipts \u2014 all from one screen. Works on tablets and phones.',
     route: '/pos',
   },
   {
     title: 'Orders',
-    body: 'Track every order in real-time. Update statuses from Pending → Preparing → Ready → Completed. Staff see updates instantly.',
+    body: 'Track every order in real-time. Update statuses from Pending \u2192 Preparing \u2192 Ready \u2192 Completed. Staff see updates instantly.',
     route: '/orders',
   },
   {
     title: 'Online Orders',
-    body: 'Customers can order directly from their phone at ptownrestaurant.com/onlineorders — no app install required. Orders land here automatically.',
+    body: 'Customers can order directly from their phone at ptownrestaurant.com/onlineorders \u2014 no app install required. Orders land here automatically.',
     route: '/orders',
   },
   {
@@ -41,11 +41,11 @@ const TOUR_STEPS = [
   },
   {
     title: 'Operations',
-    body: 'Manage expenses, cash close, coupons, inventory alerts, schedules, announcements, and store open/close status — all in one place.',
+    body: 'Manage expenses, cash close, coupons, inventory alerts, schedules, announcements, and store open/close status \u2014 all in one place.',
     route: '/operations',
   },
   {
-    title: "You're all set! 🎉",
+    title: "You're all set! \uD83C\uDF89",
     body: "Feel free to explore on your own. All demo data resets daily. Log in as Admin, Manager, or Cashier to see role-based access in action.",
     route: null,
   },
@@ -127,7 +127,7 @@ export default function DemoTour() {
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <TipsAndUpdates sx={{ color: 'warning.main', fontSize: 20 }} />
                 <Typography variant="caption" color="warning.main" sx={{ fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1 }}>
-                  Demo Tour · {step + 1} / {TOUR_STEPS.length}
+                  Demo Tour \u00b7 {step + 1} / {TOUR_STEPS.length}
                 </Typography>
               </Box>
               <IconButton size="small" onClick={handleClose} sx={{ mt: -0.5, mr: -0.5 }}>
