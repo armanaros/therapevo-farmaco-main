@@ -10,7 +10,7 @@ import { initializeApp }  from 'firebase/app';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { getFirestore, doc, setDoc, addDoc, collection, serverTimestamp, Timestamp, getDocs, writeBatch, updateDoc } from 'firebase/firestore';
 
-// ── Config ──────────────────────────────────────────────────────────────────────
+// ── Config ───────────────────────────────────────────────────────────────────────────
 
 const firebaseConfig = {
   apiKey:            'AIzaSyDVM7SisH1LHAmCpxU2JZb5F6bwxtialYk',
@@ -44,7 +44,7 @@ const clearCollection = async (name) => {
   }
 };
 
-// ── Demo Users ─────────────────────────────────────────────────────────────────
+// ── Demo Users ──────────────────────────────────────────────────────────────────────────
 
 const DEMO_USERS = [
   // Admin
@@ -62,7 +62,7 @@ const DEMO_USERS = [
   { username: 'demo_medrep6',  email: 'demo_medrep6@therapevo.local',  password: 'Demo@2026', role: 'sales_rep',      firstName: 'Sofia',     lastName: 'Santiago',     phone: '09191003006' },
 ];
 
-// ── Product Categories ──────────────────────────────────────────────────────────────
+// ── Product Categories ────────────────────────────────────────────────────────────────────
 
 const CATEGORIES = [
   { id: 'cat_rx',       name: 'Prescription Medicine',  sortOrder: 1, isActive: true },
@@ -72,7 +72,7 @@ const CATEGORIES = [
   { id: 'cat_equip',    name: 'Medical Equipment',       sortOrder: 5, isActive: true },
 ];
 
-// ── Products ────────────────────────────────────────────────────────────────────────
+// ── Products ───────────────────────────────────────────────────────────────────────────
 
 const PRODUCTS = [
   // Prescription
@@ -109,7 +109,7 @@ const PRODUCTS = [
   { name: 'Fingertip Pulse Oximeter',     categoryId: 'cat_equip',    sku: 'EQP-POX-FGR', unit: 'piece',            price: 980,  costOfGoods: 390, stockLevel: 18,  lowStockThreshold: 4,   isActive: true, requiresPrescription: false, description: 'SpO2 and pulse rate monitor.',             imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/54/Pulse_oximetry_p1130698.jpg/500px-Pulse_oximetry_p1130698.jpg' },
 ];
 
-// ── Medical Reps ────────────────────────────────────────────────────────────────
+// ── Medical Reps ──────────────────────────────────────────────────────────────────────────
 
 const MED_REPS = [
   { name: 'Carlo Cruz',     territory: 'Metro Manila — NCR',   phone: '09191003001', email: 'demo_medrep1@therapevo.local', isActive: true, targetMonthly: 120000, linkedUsername: 'demo_medrep1', managedBy: 'demo_manager1' },
@@ -120,7 +120,7 @@ const MED_REPS = [
   { name: 'Sofia Santiago', territory: 'Western Visayas',      phone: '09191003006', email: 'demo_medrep6@therapevo.local', isActive: true, targetMonthly: 88000,  linkedUsername: 'demo_medrep6', managedBy: 'demo_manager3' },
 ];
 
-// ── Customers ─────────────────────────────────────────────────────────────────
+// ── Customers ─────────────────────────────────────────────────────────────────────────
 
 const CUSTOMERS = [
   { name: "St. Luke's Medical Center",  contactPerson: 'Dr. Anna Lim',      phone: '02-88888888', address: 'Quezon City, Metro Manila', creditLimit: 500000, paymentTerms: 30 },
@@ -132,7 +132,7 @@ const CUSTOMERS = [
   { name: 'Cardinal Santos Med Center', contactPerson: 'Dr. Clara Ocampo',  phone: '02-87279444', address: 'San Juan, Metro Manila',     creditLimit: 350000, paymentTerms: 30 },
 ];
 
-// ── Expenses ───────────────────────────────────────────────────────────────────
+// ── Expenses ──────────────────────────────────────────────────────────────────────────
 
 const EXPENSES_DATA = [
   { description: 'Cold chain logistics — NCR delivery run',    category: 'Logistics',        amount: 12500,  daysBack: 2  },
@@ -149,7 +149,7 @@ const EXPENSES_DATA = [
   { description: 'Procurement — OTC medicines bulk purchase',  category: 'Procurement',      amount: 52000,  daysBack: 28 },
 ];
 
-// ── Sales scenarios ──────────────────────────────────────────────────────────────────
+// ── Sales scenarios ─────────────────────────────────────────────────────────────────────────
 
 const SALES_SCENARIOS = [
   { daysBack: 1,  customerIdx: 0, status: 'completed',       repIdx: 0 },
@@ -175,10 +175,10 @@ const SALES_SCENARIOS = [
 // ── Main ──────────────────────────────────────────────────────────────────────
 
 async function seed() {
-  console.log('🌱  Therapevo Farmaco demo seed starting...\n');
+  console.log('\uD83C\uDF31  Therapevo Farmaco demo seed starting...\n');
 
-  // ── 1. Auth: create / update demo users ──────────────────────────────────────
-  console.log('👤  Setting up demo users...');
+  // ── 1. Auth: create / update demo users ────────────────────────────────────────────
+  console.log('\uD83D\uDC64  Setting up demo users...');
   const userUids = {};
   for (const u of DEMO_USERS) {
     const displayName = `${u.firstName} ${u.lastName}`;
@@ -186,14 +186,14 @@ async function seed() {
       const cred = await createUserWithEmailAndPassword(auth, u.email, u.password);
       await updateProfile(cred.user, { displayName });
       userUids[u.username] = cred.user.uid;
-      console.log(`   ✓ Created: ${u.username} (${cred.user.uid})`);
+      console.log(`   \u2713 Created: ${u.username} (${cred.user.uid})`);
     } catch (err) {
       if (err.code === 'auth/email-already-in-use') {
         const cred = await signInWithEmailAndPassword(auth, u.email, u.password);
         userUids[u.username] = cred.user.uid;
-        console.log(`   ↻ Exists:  ${u.username} (${cred.user.uid})`);
+        console.log(`   \u21bb Exists:  ${u.username} (${cred.user.uid})`);
       } else {
-        console.error(`   ✗ Failed:  ${u.username} — ${err.message}`);
+        console.error(`   \u2717 Failed:  ${u.username} \u2014 ${err.message}`);
         throw err;
       }
     }
@@ -201,10 +201,10 @@ async function seed() {
 
   // Sign in as admin for all subsequent Firestore writes
   const adminCred = await signInWithEmailAndPassword(auth, DEMO_USERS[0].email, DEMO_USERS[0].password);
-  console.log(`\n🔑  Signed in as admin (${adminCred.user.uid})`);
+  console.log(`\n\uD83D\uDD11  Signed in as admin (${adminCred.user.uid})`);
 
-  // ── 2. Firestore: user documents ───────────────────────────────────────────────
-  console.log('\n📋  Writing user documents...');
+  // ── 2. Firestore: user documents ─────────────────────────────────────────────
+  console.log('\n\uD83D\uDCCB  Writing user documents...');
   for (const u of DEMO_USERS) {
     const uid = userUids[u.username];
     await setDoc(doc(db, 'users', uid), {
@@ -221,20 +221,20 @@ async function seed() {
       createdAt:  ts(),
       updatedAt:  ts(),
     });
-    console.log(`   ✓ ${u.username} (${u.role})`);
+    console.log(`   \u2713 ${u.username} (${u.role})`);
   }
 
   // ── 3. Product categories ───────────────────────────────────────────────────────────
-  console.log('\n📂  Seeding product categories...');
+  console.log('\n\uD83D\uDCC2  Seeding product categories...');
   for (const cat of CATEGORIES) {
     const { id, ...data } = cat;
     await setDoc(doc(db, 'product_categories', id), { ...data, createdAt: ts(), updatedAt: ts() });
-    console.log(`   ✓ ${cat.name}`);
+    console.log(`   \u2713 ${cat.name}`);
   }
 
-  // ── 4. Products ──────────────────────────────────────────────────────────────────────
-  console.log('\n💊  Seeding pharmaceutical products...');
-  console.log('   🗑️  Clearing old product data...');
+  // ── 4. Products ─────────────────────────────────────────────────────────────────────
+  console.log('\n\uD83D\uDC8A  Seeding pharmaceutical products...');
+  console.log('   \uD83D\uDDD1\uFE0F  Clearing old product data...');
   await clearCollection('products');
   await clearCollection('inventory');
 
@@ -255,11 +255,11 @@ async function seed() {
       updatedAt: ts(),
     });
     productIds[p.sku] = ref.id;
-    console.log(`   ✓ ${p.name}`);
+    console.log(`   \u2713 ${p.name}`);
   }
 
-  // ── 5. Inventory ─────────────────────────────────────────────────────────────────────
-  console.log('\n📦  Seeding inventory...');
+  // ── 5. Inventory ────────────────────────────────────────────────────────────────────
+  console.log('\n\uD83D\uDCE6  Seeding inventory...');
   const locations = ['Rack A', 'Rack B', 'Cold Storage', 'Shelf C', 'Rack D'];
   for (const p of PRODUCTS) {
     await addDoc(collection(db, 'inventory'), {
@@ -275,10 +275,10 @@ async function seed() {
       updatedAt:         ts(),
     });
   }
-  console.log(`   ✓ ${PRODUCTS.length} inventory records`);
+  console.log(`   \u2713 ${PRODUCTS.length} inventory records`);
 
-  // ── 6. Medical reps ──────────────────────────────────────────────────────────────────
-  console.log('\n🩺  Seeding medical representatives...');
+  // ── 6. Medical reps ───────────────────────────────────────────────────────────────────
+  console.log('\n\uD83E\uDE7A  Seeding medical representatives...');
   await clearCollection('medical_reps');
   const repIds = [];
   for (const rep of MED_REPS) {
@@ -293,21 +293,19 @@ async function seed() {
       updatedAt:  ts(),
     });
     repIds.push(ref.id);
-    console.log(`   ✓ ${rep.name} → linked: ${linkedUsername}, manager: ${managedBy}`);
+    console.log(`   \u2713 ${rep.name} \u2192 linked: ${linkedUsername}, manager: ${managedBy}`);
   }
 
-  // ── 7. Accounts receivable ──────────────────────────────────────────────────────────
-  console.log('\n🏥  Seeding accounts receivable...');
-  console.log('   🗑️  Clearing old AR data...');
+  // ── 7. Accounts receivable ───────────────────────────────────────────────────────────
+  console.log('\n\uD83C\uDFE5  Seeding accounts receivable...');
+  console.log('   \uD83D\uDDD1\uFE0F  Clearing old AR data...');
   await clearCollection('accounts_receivable');
   await clearCollection('ar_payments');
 
   const adminUid = adminCred.user.uid;
 
-  // 7 realistic AR records — 4 have installment plans, 3 show as "upcoming" within 7 days
   const AR_RECORDS = [
     {
-      // nextDue = Feb 21 + 3 months = May 21 (TODAY) → upcoming ✓
       customerName: "St. Luke's Medical Center",
       customerPhone: '02-88888888',
       customerAddress: 'Quezon City, Metro Manila',
@@ -325,7 +323,6 @@ async function seed() {
       notes: '12-month credit arrangement. 3 of 12 installments received.',
     },
     {
-      // nextDue = Mar 25 + 2 months = May 25 (+4 days) → upcoming ✓
       customerName: 'Makati Medical Center',
       customerPhone: '02-88888000',
       customerAddress: 'Makati City, Metro Manila',
@@ -343,8 +340,7 @@ async function seed() {
       notes: '6-month installment plan. 2 of 6 installments received.',
     },
     {
-      // No installments; overdue 30+ days
-      customerName: 'Mercury Drug — Paranaque',
+      customerName: 'Mercury Drug \u2014 Paranaque',
       customerPhone: '02-82345678',
       customerAddress: 'Paranaque City',
       invoiceNumber: 'INV-2026-0003',
@@ -358,11 +354,10 @@ async function seed() {
       installmentAmount: null,
       installmentFrequency: null,
       firstInstallmentDue: null,
-      notes: '30-day credit term. Follow-up required — no payment received.',
+      notes: '30-day credit term. Follow-up required \u2014 no payment received.',
     },
     {
-      // Partial payment made, no installment plan
-      customerName: 'Generika Pharmacy — Pasig',
+      customerName: 'Generika Pharmacy \u2014 Pasig',
       customerPhone: '02-83456789',
       customerAddress: 'Pasig City',
       invoiceNumber: 'INV-2026-0004',
@@ -376,10 +371,9 @@ async function seed() {
       installmentAmount: null,
       installmentFrequency: null,
       firstInstallmentDue: null,
-      notes: 'Partial payment of ₱30,000 received via bank transfer on May 10.',
+      notes: 'Partial payment of \u20b130,000 received via bank transfer on May 10.',
     },
     {
-      // No payment yet, due Jun 30
       customerName: 'RxGo Community Clinic',
       customerPhone: '09301001001',
       customerAddress: 'Las Pinas City',
@@ -397,7 +391,6 @@ async function seed() {
       notes: '45-day credit term. Invoice issued May 16, 2026.',
     },
     {
-      // nextDue = Feb 19 + 1 month = Mar 19 (overdue ~63 days) → shows in upcoming (overdue) ✓
       customerName: 'Ospital ng Maynila',
       customerPhone: '02-85256000',
       customerAddress: 'Manila City',
@@ -415,7 +408,6 @@ async function seed() {
       notes: 'Quarterly installment plan. 2nd installment overdue since Mar 19.',
     },
     {
-      // nextDue = May 22 + 0 months = May 22 (TOMORROW) → upcoming ✓
       customerName: 'Cardinal Santos Med Center',
       customerPhone: '02-87279444',
       customerAddress: 'San Juan, Metro Manila',
@@ -441,29 +433,23 @@ async function seed() {
       createdAt: ts(),
       updatedAt: ts(),
     });
-    console.log(`   ✓ ${ar.customerName} — ${ar.invoiceNumber} (balance: ₱${ar.balance.toLocaleString()})`);
+    console.log(`   \u2713 ${ar.customerName} \u2014 ${ar.invoiceNumber} (balance: \u20b1${ar.balance.toLocaleString()})`);
   }
 
-  // ── 5. Batches ───────────────────────────────────────────────────────────────────────
-  console.log('\n📦  Seeding batches...');
+  // ── 5. Batches ────────────────────────────────────────────────────────────────────────
+  console.log('\n\uD83D\uDCE6  Seeding batches...');
   await clearCollection('batches');
 
-  // Helper: future date Timestamp
   const future = (daysFromNow) => Timestamp.fromDate(new Date(now.getTime() + daysFromNow * 864e5));
 
-  // Batch definitions: { sku, batchNumber, lotNumber, quantity, unitCost, expiryDays (from now), supplier }
   const BATCH_DEFS = [
-    // Expired (red)
     { sku: 'OTC-ORS-PKT', batchNumber: 'BN-ORS-001', lotNumber: 'LOT-ORS-2023A', quantity: 30,  unitCost: 32,  expiryDays: -15,  supplier: 'PharmaCo Distributors' },
     { sku: 'SUP-MSK-3PL', batchNumber: 'BN-MSK-001', lotNumber: 'LOT-MSK-2023A', quantity: 50,  unitCost: 70,  expiryDays: -5,   supplier: 'MediSupply Inc.' },
-    // Near expiry ≤30 days (red/critical)
     { sku: 'RX-SAL-INH',  batchNumber: 'BN-SAL-001', lotNumber: 'LOT-SAL-2024A', quantity: 20,  unitCost: 280, expiryDays: 12,   supplier: 'GSK Philippines' },
     { sku: 'RX-INS-GLA',  batchNumber: 'BN-INS-001', lotNumber: 'LOT-INS-2024A', quantity: 10,  unitCost: 820, expiryDays: 25,   supplier: 'Novo Nordisk PH' },
-    // Warning ≤90 days (yellow)
     { sku: 'OTC-CET-010', batchNumber: 'BN-CET-001', lotNumber: 'LOT-CET-2024A', quantity: 60,  unitCost: 55,  expiryDays: 45,   supplier: 'Unilab Inc.' },
     { sku: 'VIT-FES-325', batchNumber: 'BN-FES-001', lotNumber: 'LOT-FES-2024A', quantity: 80,  unitCost: 58,  expiryDays: 70,   supplier: 'Actimed Pharma' },
     { sku: 'RX-OMP-020',  batchNumber: 'BN-OMP-001', lotNumber: 'LOT-OMP-2024A', quantity: 90,  unitCost: 100, expiryDays: 85,   supplier: 'AstraZeneca PH' },
-    // Good stock — 6–24 months out (green)
     { sku: 'RX-AMX-500',  batchNumber: 'BN-AMX-001', lotNumber: 'LOT-AMX-2024A', quantity: 120, unitCost: 210, expiryDays: 365,  supplier: 'GSK Philippines' },
     { sku: 'RX-AMX-500',  batchNumber: 'BN-AMX-002', lotNumber: 'LOT-AMX-2024B', quantity: 80,  unitCost: 215, expiryDays: 540,  supplier: 'GSK Philippines' },
     { sku: 'RX-MET-500',  batchNumber: 'BN-MET-001', lotNumber: 'LOT-MET-2024A', quantity: 200, unitCost: 130, expiryDays: 730,  supplier: 'Merck Philippines' },
@@ -492,7 +478,6 @@ async function seed() {
     { sku: 'OTC-CET-010', batchNumber: 'BN-CET-002', lotNumber: 'LOT-CET-2025A', quantity: 140, unitCost: 55,  expiryDays: 400,  supplier: 'Unilab Inc.' },
   ];
 
-  // Group batches by SKU to find nearestExpiry + representative lot/batch per product
   const nearestExpiryBySku = {};
   const nearestBatchBySku  = {};
   for (const b of BATCH_DEFS) {
@@ -521,9 +506,8 @@ async function seed() {
       createdAt:   ago(rnd(1, 30)),
     });
   }
-  console.log(`   ✓ ${BATCH_DEFS.length} batch records`);
+  console.log(`   \u2713 ${BATCH_DEFS.length} batch records`);
 
-  // Update each product's nearestExpiry, batchNumber, lotNumber
   console.log('   Updating product nearestExpiry, batchNumber, lotNumber...');
   for (const [sku, expTs] of Object.entries(nearestExpiryBySku)) {
     const pid = productIds[sku];
@@ -537,15 +521,14 @@ async function seed() {
       });
     }
   }
-  console.log(`   ✓ nearestExpiry + lot/batch set for ${Object.keys(nearestExpiryBySku).length} products`);
+  console.log(`   \u2713 nearestExpiry + lot/batch set for ${Object.keys(nearestExpiryBySku).length} products`);
 
   // ── 8. Sales transactions ───────────────────────────────────────────────────────────
-  console.log('\n🧣  Seeding sales transactions...');
-  console.log('   🗑️  Clearing old sales data...');
+  console.log('\n\uD83E\uDDFE  Seeding sales transactions...');
+  console.log('   \uD83D\uDDD1\uFE0F  Clearing old sales data...');
   await clearCollection('sales_transactions');
   await clearCollection('sale_items');
 
-  // Payment methods per scenario (no random credit_term — AR seeded separately)
   const SCENARIO_PMETHODS = [
     'bank_transfer', 'cash',          'cash',         'gcash',
     'bank_transfer', 'check',         'bank_transfer', 'bank_transfer',
@@ -577,7 +560,7 @@ async function seed() {
         unit:        p.unit,
         quantity:    qty,
         unitPrice:   p.price,
-        totalPrice:  qty * p.price,    // ← correct field name
+        totalPrice:  qty * p.price,
       });
     }
 
@@ -619,14 +602,13 @@ async function seed() {
       });
     }
   }
-  console.log(`   ✓ ${SALES_SCENARIOS.length} sales transactions`);
+  console.log(`   \u2713 ${SALES_SCENARIOS.length} sales transactions`);
 
-  // ── 8b. Sales counter ─────────────────────────────────────────────────────────────
   await setDoc(doc(db, 'system_counters', 'sales'), { current: SALES_SCENARIOS.length });
-  console.log(`   ✓ system_counters/sales → current: ${SALES_SCENARIOS.length}`);
+  console.log(`   \u2713 system_counters/sales \u2192 current: ${SALES_SCENARIOS.length}`);
 
-  // ── 9. Expenses ────────────────────────────────────────────────────────────────────
-  console.log('\n💸  Seeding expenses...');
+  // ── 9. Expenses ───────────────────────────────────────────────────────────────────
+  console.log('\n\uD83D\uDCB8  Seeding expenses...');
   for (const exp of EXPENSES_DATA) {
     const d = ago(exp.daysBack);
     await addDoc(collection(db, 'expenses'), {
@@ -643,10 +625,10 @@ async function seed() {
       updatedAt:     d,
     });
   }
-  console.log(`   ✓ ${EXPENSES_DATA.length} expense records`);
+  console.log(`   \u2713 ${EXPENSES_DATA.length} expense records`);
 
-  // ── 10. System settings ────────────────────────────────────────────────────────────
-  console.log('\n⚙️   Writing system settings...');
+  // ── 10. System settings ───────────────────────────────────────────────────────────
+  console.log('\n\u2699\uFE0F   Writing system settings...');
   await setDoc(doc(db, 'system_settings', 'main'), {
     companyName:   'Therapevo Farmaco',
     address:       '123 Pharmaceutical Ave., Pasig City, Metro Manila',
@@ -659,38 +641,37 @@ async function seed() {
     createdAt:     ts(),
     updatedAt:     ts(),
   });
-  console.log('   ✓ system_settings/main');
+  console.log('   \u2713 system_settings/main');
 
-  // ── Done ──────────────────────────────────────────────────────────────────────────
-  console.log('\n✅  Seed complete!\n');
-  console.log('┌─────────────────────────────────────────────────┐');
-  console.log('│           DEMO LOGIN CREDENTIALS               │');
-  console.log('├────────────────┬───────────────┬──────────────┤');
-  console.log('│ Role           │ Username      │ Password     │');
-  console.log('├────────────────┼───────────────┼──────────────┤');
-  console.log('│ Admin          │ demo_admin    │ Demo@2026    │');
-  console.log('├────────────────┼───────────────┼──────────────┤');
-  console.log('│ Manager        │ demo_manager1 │ Demo@2026    │');
-  console.log('│ Manager        │ demo_manager2 │ Demo@2026    │');
-  console.log('│ Manager        │ demo_manager3 │ Demo@2026    │');
-  console.log('├────────────────┼───────────────┼──────────────┤');
-  console.log('│ Med Rep        │ demo_medrep1  │ Demo@2026    │');
-  console.log('│ Med Rep        │ demo_medrep2  │ Demo@2026    │');
-  console.log('│ Med Rep        │ demo_medrep3  │ Demo@2026    │');
-  console.log('│ Med Rep        │ demo_medrep4  │ Demo@2026    │');
-  console.log('│ Med Rep        │ demo_medrep5  │ Demo@2026    │');
-  console.log('│ Med Rep        │ demo_medrep6  │ Demo@2026    │');
-  console.log('└────────────────┴───────────────┴──────────────┘');
-  console.log('\n🌐  Demo site: https://therapevo-demo.netlify.app\n');
+  console.log('\n\u2705  Seed complete!\n');
+  console.log('\u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510');
+  console.log('\u2502           DEMO LOGIN CREDENTIALS               \u2502');
+  console.log('\u251c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u252c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u252c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2524');
+  console.log('\u2502 Role           \u2502 Username      \u2502 Password     \u2502');
+  console.log('\u251c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2524');
+  console.log('\u2502 Admin          \u2502 demo_admin    \u2502 Demo@2026    \u2502');
+  console.log('\u251c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2524');
+  console.log('\u2502 Manager        \u2502 demo_manager1 \u2502 Demo@2026    \u2502');
+  console.log('\u2502 Manager        \u2502 demo_manager2 \u2502 Demo@2026    \u2502');
+  console.log('\u2502 Manager        \u2502 demo_manager3 \u2502 Demo@2026    \u2502');
+  console.log('\u251c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2524');
+  console.log('\u2502 Med Rep        \u2502 demo_medrep1  \u2502 Demo@2026    \u2502');
+  console.log('\u2502 Med Rep        \u2502 demo_medrep2  \u2502 Demo@2026    \u2502');
+  console.log('\u2502 Med Rep        \u2502 demo_medrep3  \u2502 Demo@2026    \u2502');
+  console.log('\u2502 Med Rep        \u2502 demo_medrep4  \u2502 Demo@2026    \u2502');
+  console.log('\u2502 Med Rep        \u2502 demo_medrep5  \u2502 Demo@2026    \u2502');
+  console.log('\u2502 Med Rep        \u2502 demo_medrep6  \u2502 Demo@2026    \u2502');
+  console.log('\u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2534\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2534\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518');
+  console.log('\n\uD83C\uDF10  Demo site: https://therapevo-demo.netlify.app\n');
 
   process.exit(0);
 }
 
 seed().catch((err) => {
-  console.error('\n❌  Seed failed:', err.code || err.message);
+  console.error('\n\u274C  Seed failed:', err.code || err.message);
   if (err.code === 'permission-denied') {
     console.error('\n   Firestore rules are blocking writes.');
-    console.error('   Go to Firebase Console → Firestore → Rules');
+    console.error('   Go to Firebase Console \u2192 Firestore \u2192 Rules');
     console.error('   and set test mode (allow all) or deploy the project rules first.\n');
   }
   process.exit(1);
