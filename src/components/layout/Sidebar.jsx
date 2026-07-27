@@ -54,8 +54,6 @@ const Sidebar = ({ mobileOpen, onMobileClose, collapsed, onCollapseToggle }) => 
   const isRepRole     = isSalesRep?.();
   const isManagerRole = isMedRepManager?.();
 
-  // Grouped navigation for pharma distributor
-  // Med reps see a limited portal-only nav; managers & admins see full nav
   const navGroups = isRepRole ? [
     {
       label: 'MY PORTAL',
@@ -96,9 +94,7 @@ const Sidebar = ({ mobileOpen, onMobileClose, collapsed, onCollapseToggle }) => 
     },
   ];
 
-  // Flat list used for collapsed mode (no group labels)
   const menuItems = navGroups.flatMap((g) => g.items);
-
   const currentWidth = collapsed ? DRAWER_COLLAPSED_WIDTH : DRAWER_WIDTH;
 
   const handleNavigate = (path) => {
@@ -106,7 +102,6 @@ const Sidebar = ({ mobileOpen, onMobileClose, collapsed, onCollapseToggle }) => 
     if (isMobile) onMobileClose();
   };
 
-  // Sidebar design tokens
   const SB = {
     bg:           '#0D1F15',
     bgBrand:      '#0A1A11',
@@ -125,7 +120,6 @@ const Sidebar = ({ mobileOpen, onMobileClose, collapsed, onCollapseToggle }) => 
 
   const drawerContent = (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', bgcolor: SB.bg }}>
-      {/* Logo / Brand */}
       <Box
         sx={{
           display: 'flex',
@@ -166,14 +160,12 @@ const Sidebar = ({ mobileOpen, onMobileClose, collapsed, onCollapseToggle }) => 
         )}
       </Box>
 
-      {/* Navigation */}
       <Box sx={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', py: 1,
         '&::-webkit-scrollbar': { width: 4 },
         '&::-webkit-scrollbar-track': { bgcolor: 'transparent' },
         '&::-webkit-scrollbar-thumb': { bgcolor: 'rgba(255,255,255,0.12)', borderRadius: 2 },
       }}>
         {collapsed ? (
-          // Collapsed: flat list with tooltips, no group labels
           <List sx={{ px: 0.5 }}>
             {menuItems.filter((item) => item.show).map((item) => {
               const isActive = location.pathname === item.path;
@@ -199,7 +191,6 @@ const Sidebar = ({ mobileOpen, onMobileClose, collapsed, onCollapseToggle }) => 
             })}
           </List>
         ) : (
-          // Expanded: grouped nav with section labels
           navGroups.map((group) => {
             const visibleItems = group.items.filter((item) => item.show);
             if (visibleItems.length === 0) return null;
@@ -256,7 +247,6 @@ const Sidebar = ({ mobileOpen, onMobileClose, collapsed, onCollapseToggle }) => 
 
       <Divider sx={{ borderColor: SB.divider }} />
 
-      {/* Collapse toggle (not shown on mobile) */}
       {!isMobile && (
         <Box sx={{ p: 1, display: 'flex', justifyContent: 'center' }}>
           <IconButton
@@ -269,7 +259,6 @@ const Sidebar = ({ mobileOpen, onMobileClose, collapsed, onCollapseToggle }) => 
         </Box>
       )}
 
-      {/* User info */}
       {!collapsed && (
         <Box sx={{ px: 2.5, py: 1.5, borderTop: `1px solid ${SB.divider}` }}>
           <Typography variant="body2" noWrap sx={{ fontWeight: 600, color: SB.userName }}>
@@ -285,7 +274,6 @@ const Sidebar = ({ mobileOpen, onMobileClose, collapsed, onCollapseToggle }) => 
 
   return (
     <>
-      {/* Mobile drawer (temporary overlay) */}
       <Drawer
         variant="temporary"
         open={mobileOpen}
@@ -304,7 +292,6 @@ const Sidebar = ({ mobileOpen, onMobileClose, collapsed, onCollapseToggle }) => 
         {drawerContent}
       </Drawer>
 
-      {/* Desktop/tablet drawer (permanent) */}
       <Drawer
         variant="permanent"
         sx={{

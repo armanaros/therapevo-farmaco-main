@@ -36,7 +36,7 @@ const ProductList = ({ products, categories, selectedCategoryId }) => {
     }
   }, [searchParams, products]);
 
-  const getCategory = (catId) => categories.find((c) => c.id === catId)?.name || '—';
+  const getCategory = (catId) => categories.find((c) => c.id === catId)?.name || '\u2014';
 
   const filtered = products.filter((p) => {
     if (!showInactive && p.isActive === false) return false;
@@ -87,7 +87,6 @@ const ProductList = ({ products, categories, selectedCategoryId }) => {
 
   return (
     <Box>
-      {/* ── Toolbar ── */}
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2, flexWrap: 'wrap' }}>
         <Typography variant="h6" sx={{ flex: 1 }}>
           Products
@@ -96,7 +95,7 @@ const ProductList = ({ products, categories, selectedCategoryId }) => {
           </Typography>
         </Typography>
         <TextField
-          size="small" placeholder="Search name, generic, barcode…"
+          size="small" placeholder="Search name, generic, barcode\u2026"
           value={search} onChange={(e) => setSearch(e.target.value)}
           sx={{ width: 260 }}
           InputProps={{ startAdornment: <InputAdornment position="start"><Search fontSize="small" /></InputAdornment> }}
@@ -133,7 +132,6 @@ const ProductList = ({ products, categories, selectedCategoryId }) => {
                     position: 'relative',
                   }}
                 >
-                  {/* Prescription badge */}
                   {p.requiresPrescription && (
                     <Box sx={{ position: 'absolute', top: 8, right: 8 }}>
                       <Chip label="Rx" size="small" color="error" sx={{ fontWeight: 700 }} />
@@ -141,7 +139,6 @@ const ProductList = ({ products, categories, selectedCategoryId }) => {
                   )}
 
                   <CardContent>
-                    {/* Product header */}
                     <Box sx={{ display: 'flex', gap: 1.5, mb: 1 }}>
                       <Box sx={{
                         width: 44, height: 44, borderRadius: 2,
@@ -179,14 +176,12 @@ const ProductList = ({ products, categories, selectedCategoryId }) => {
                       </Box>
                     </Box>
 
-                    {/* Details row */}
                     <Stack direction="row" spacing={0.5} sx={{ mb: 1.5, flexWrap: 'wrap', gap: 0.5 }}>
                       {p.dosageForm && <Chip label={p.dosageForm} size="small" variant="outlined" />}
                       {p.strength   && <Chip label={p.strength}   size="small" variant="outlined" color="primary" />}
                       {p.unit       && <Chip label={`per ${p.unit}`} size="small" />}
                     </Stack>
 
-                    {/* Barcode */}
                     {p.barcode && (
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 1 }}>
                         <QrCode sx={{ fontSize: 14, color: 'text.disabled' }} />
@@ -196,7 +191,6 @@ const ProductList = ({ products, categories, selectedCategoryId }) => {
 
                     <Divider sx={{ my: 1 }} />
 
-                    {/* Price */}
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
                       <Typography variant="h6" color="primary" fontWeight={700}>
                         {formatCurrency(p.price)}
@@ -208,7 +202,6 @@ const ProductList = ({ products, categories, selectedCategoryId }) => {
                       )}
                     </Box>
 
-                    {/* Stock level */}
                     <Box sx={{ mb: 1 }}>
                       <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
                         <Typography variant="caption" color={`${stockColor(p)}.main`} fontWeight={600}>
@@ -226,7 +219,6 @@ const ProductList = ({ products, categories, selectedCategoryId }) => {
                       />
                     </Box>
 
-                    {/* Actions */}
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 1 }}>
                       <Tooltip title={p.isAvailable ? 'Available on POS' : 'Hidden from POS'}>
                         <Switch

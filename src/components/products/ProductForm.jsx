@@ -95,7 +95,6 @@ const ProductForm = ({ open, onClose, onSave, product = null, categories = [] })
         <DialogContent dividers>
           <Stack spacing={3}>
 
-            {/* ── Basic Info ── */}
             <Typography variant="subtitle2" color="text.secondary" fontWeight={700}>
               PRODUCT INFORMATION
             </Typography>
@@ -114,7 +113,7 @@ const ProductForm = ({ open, onClose, onSave, product = null, categories = [] })
               </Grid>
               <Grid size={{ xs: 12, sm: 6 }}>
                 <TextField select label="Category" value={form.categoryId} onChange={set('categoryId')} fullWidth>
-                  <MenuItem value=""><em>— Select Category —</em></MenuItem>
+                  <MenuItem value=""><em>\u2014 Select Category \u2014</em></MenuItem>
                   {categories.map((c) => (
                     <MenuItem key={c.id} value={c.id}>{c.name}</MenuItem>
                   ))}
@@ -124,14 +123,13 @@ const ProductForm = ({ open, onClose, onSave, product = null, categories = [] })
 
             <Divider />
 
-            {/* ── Pharmaceutical Details ── */}
             <Typography variant="subtitle2" color="text.secondary" fontWeight={700}>
               PHARMACEUTICAL DETAILS
             </Typography>
             <Grid container spacing={2}>
               <Grid size={{ xs: 12, sm: 4 }}>
                 <TextField select label="Dosage Form" value={form.dosageForm} onChange={set('dosageForm')} fullWidth>
-                  <MenuItem value=""><em>— Select —</em></MenuItem>
+                  <MenuItem value=""><em>\u2014 Select \u2014</em></MenuItem>
                   {DOSAGE_FORMS.map((d) => <MenuItem key={d} value={d}>{d}</MenuItem>)}
                 </TextField>
               </Grid>
@@ -175,7 +173,6 @@ const ProductForm = ({ open, onClose, onSave, product = null, categories = [] })
 
             <Divider />
 
-            {/* ── Pricing & Stock ── */}
             <Typography variant="subtitle2" color="text.secondary" fontWeight={700}>
               PRICING & STOCK
             </Typography>
@@ -202,14 +199,13 @@ const ProductForm = ({ open, onClose, onSave, product = null, categories = [] })
 
             <Divider />
 
-            {/* ── Additional ── */}
             <Typography variant="subtitle2" color="text.secondary" fontWeight={700}>
               ADDITIONAL
             </Typography>
             <Grid container spacing={2}>
               <Grid size={{ xs: 12 }}>
                 <TextField label="Notes" value={form.notes} onChange={set('notes')}
-                  multiline rows={2} fullWidth placeholder="Storage instructions, handling notes…" />
+                  multiline rows={2} fullWidth placeholder="Storage instructions, handling notes\u2026" />
               </Grid>
               <Grid size={{ xs: 12, sm: 8 }}>
                 <TextField label="Image URL" value={form.imageUrl} onChange={set('imageUrl')} fullWidth />
@@ -234,7 +230,7 @@ const ProductForm = ({ open, onClose, onSave, product = null, categories = [] })
         <DialogActions sx={{ px: 3, pb: 2 }}>
           <Button onClick={onClose}>Cancel</Button>
           <Button type="submit" variant="contained" disabled={saving}>
-            {saving ? 'Saving…' : isEdit ? 'Update Product' : 'Add Product'}
+            {saving ? 'Saving\u2026' : isEdit ? 'Update Product' : 'Add Product'}
           </Button>
         </DialogActions>
       </form>

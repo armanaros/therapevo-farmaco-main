@@ -74,7 +74,7 @@ const OrderFilters = ({ selectedStatus, onStatusChange, orderCounts, dateFrom, d
               },
             }}
           />
-          <Typography variant="body2" color="text.secondary">–</Typography>
+          <Typography variant="body2" color="text.secondary">{String.fromCharCode(8211)}</Typography>
           <DatePicker
             value={dateTo}
             onChange={(val) => val && onDateToChange(toEndOfDay(val))}

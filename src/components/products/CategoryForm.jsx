@@ -55,7 +55,7 @@ const CategoryForm = ({ open, onClose, onSave, category = null }) => {
         <DialogActions sx={{ px: 3, pb: 2 }}>
           <Button onClick={onClose}>Cancel</Button>
           <Button type="submit" variant="contained" disabled={saving}>
-            {saving ? 'Saving…' : isEdit ? 'Update' : 'Create'}
+            {saving ? 'Saving\u2026' : isEdit ? 'Update' : 'Create'}
           </Button>
         </DialogActions>
       </form>

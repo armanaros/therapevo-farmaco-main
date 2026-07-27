@@ -50,7 +50,6 @@ const OrderCard = ({ order, onViewDetails, onStatusChange, focused }) => {
       onClick={() => onViewDetails(order)}
     >
       <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
-        {/* Header */}
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
           <Box>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
@@ -77,7 +76,6 @@ const OrderCard = ({ order, onViewDetails, onStatusChange, focused }) => {
           <StatusChip status={order.status} />
         </Box>
 
-        {/* Order type + table */}
         <Stack direction="row" spacing={0.5} sx={{ mb: 1 }}>
           <Chip
             label={order.orderType}
@@ -101,12 +99,10 @@ const OrderCard = ({ order, onViewDetails, onStatusChange, focused }) => {
           />
         </Stack>
 
-        {/* Items summary */}
         <Typography variant="body2" color="text.secondary" noWrap sx={{ mb: order.notes ? 0.5 : 1 }}>
           {order.items?.map((i) => `${i.quantity}x ${i.name}`).join(', ')}
         </Typography>
 
-        {/* Notes preview */}
         {order.notes && (
           <Typography
             variant="caption"
@@ -120,11 +116,10 @@ const OrderCard = ({ order, onViewDetails, onStatusChange, focused }) => {
               textOverflow: 'ellipsis',
             }}
           >
-            📋 {order.notes}
+            \uD83D\uDCCB {order.notes}
           </Typography>
         )}
 
-        {/* Footer */}
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
             {formatCurrency(order.total)}

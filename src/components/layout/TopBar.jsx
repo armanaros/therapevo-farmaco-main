@@ -113,7 +113,6 @@ const TopBar = ({ drawerWidth, onMenuClick }) => {
         }}
       >
         <Toolbar sx={{ justifyContent: 'space-between' }}>
-          {/* Left side */}
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             {isMobile && (
               <IconButton edge="start" onClick={onMenuClick} sx={{ mr: 1 }}>
@@ -134,16 +133,13 @@ const TopBar = ({ drawerWidth, onMenuClick }) => {
             )}
           </Box>
 
-          {/* Right side */}
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            {/* Notifications */}
             <IconButton onClick={handleNotifOpen} size="large">
               <Badge badgeContent={badgeCount} color="error">
                 <Notifications />
               </Badge>
             </IconButton>
 
-            {/* Profile avatar */}
             <IconButton onClick={handleProfileMenuOpen} sx={{ p: 0.5 }}>
               <Avatar
                 sx={{
@@ -162,7 +158,6 @@ const TopBar = ({ drawerWidth, onMenuClick }) => {
         </Toolbar>
       </AppBar>
 
-      {/* Profile menu */}
       <Menu
         anchorEl={anchorEl}
         open={Boolean(anchorEl)}
@@ -181,7 +176,6 @@ const TopBar = ({ drawerWidth, onMenuClick }) => {
         </MenuItem>
       </Menu>
 
-      {/* Notifications menu */}
       <Menu
         anchorEl={notifAnchorEl}
         open={Boolean(notifAnchorEl)}
@@ -226,7 +220,7 @@ const TopBar = ({ drawerWidth, onMenuClick }) => {
                       <Circle sx={{ fontSize: 10, color: isOut ? 'error.main' : 'warning.main', flexShrink: 0 }} />
                       <ListItemText
                         primary={item.name}
-                        secondary={isOut ? 'Out of stock — click to view in Inventory' : `${item.stockLevel} left (min: ${item.lowStockThreshold || 5})`}
+                        secondary={isOut ? 'Out of stock \u2014 click to view in Inventory' : `${item.stockLevel} left (min: ${item.lowStockThreshold || 5})`}
                         primaryTypographyProps={{ variant: 'body2', fontWeight: 600, color: isOut ? 'error.main' : 'text.primary' }}
                         secondaryTypographyProps={{ variant: 'caption' }}
                       />
@@ -252,7 +246,6 @@ const TopBar = ({ drawerWidth, onMenuClick }) => {
               </Box>
             )
           )}
-          {/* System Tab */}
           {notifTab === 1 && (
             systemAlerts.length > 0 ? (
               systemAlerts.map((alert) => (
@@ -275,7 +268,6 @@ const TopBar = ({ drawerWidth, onMenuClick }) => {
               </Box>
             )
           )}
-          {/* Announcements Tab */}
           {notifTab === 2 && (
             announcements.length > 0 ? (
               <>
@@ -293,7 +285,7 @@ const TopBar = ({ drawerWidth, onMenuClick }) => {
                     <Campaign sx={{ fontSize: 18, color: 'primary.main', flexShrink: 0 }} />
                     <ListItemText
                       primary={ann.title || 'Announcement'}
-                      secondary={ann.message?.slice(0, 60) + (ann.message?.length > 60 ? '…' : '')}
+                      secondary={ann.message?.slice(0, 60) + (ann.message?.length > 60 ? '\u2026' : '')}
                       primaryTypographyProps={{ variant: 'body2', fontWeight: 600 }}
                       secondaryTypographyProps={{ variant: 'caption' }}
                     />
@@ -306,7 +298,6 @@ const TopBar = ({ drawerWidth, onMenuClick }) => {
               </Box>
             )
           )}
-          {/* My Alerts Tab */}
           {notifTab === 3 && (
             userNotifications.length > 0 ? (
               <>
@@ -338,14 +329,12 @@ const TopBar = ({ drawerWidth, onMenuClick }) => {
       <Divider />
       </Menu>
 
-      {/* Announcement detail dialog */}
       <Dialog
         open={!!selectedAnnouncement}
         onClose={() => setSelectedAnnouncement(null)}
         maxWidth="sm"
         fullWidth
       >
-        {/* Header banner */}
         <Box sx={{
           background: 'linear-gradient(135deg, #15803D 0%, #16A34A 100%)',
           px: 3, py: 2,
@@ -358,7 +347,6 @@ const TopBar = ({ drawerWidth, onMenuClick }) => {
         </Box>
 
         <DialogContent sx={{ pt: 2.5, pb: 1 }}>
-          {/* Meta row */}
           <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 2 }}>
             <Chip
               size="small"
@@ -376,7 +364,6 @@ const TopBar = ({ drawerWidth, onMenuClick }) => {
 
           <Divider sx={{ mb: 2 }} />
 
-          {/* Message body */}
           <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap', lineHeight: 1.7 }}>
             {selectedAnnouncement?.message}
           </Typography>
