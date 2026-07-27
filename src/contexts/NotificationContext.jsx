@@ -7,7 +7,7 @@ import { collection, onSnapshot, query, where, updateDoc, doc } from 'firebase/f
 import { COLLECTIONS } from '@/config/constants';
 import { formatCurrency } from '@/utils/formatters';
 
-// ── Installment helpers (mirrors AccountsReceivablePage) ─────────────────────
+// ── Installment helpers (mirrors AccountsReceivablePage) ─────────────────────────────────────
 const _instPaid = (amountPaid, installmentAmount) => {
   if (!installmentAmount || installmentAmount <= 0) return null;
   return Math.floor((amountPaid || 0) / installmentAmount);
@@ -79,7 +79,7 @@ export const NotificationProvider = ({ children }) => {
     arRecords.forEach((r) => {
       if (r.status === 'paid' || r.status === 'cancelled' || r.status === 'rejected') return;
 
-      // ── Case 1: has a full installment plan ──────────────────────────────
+      // ── Case 1: has a full installment plan ──────────────────────────────────────────────────
       if (r.installmentTotal) {
         const ip = _instPaid(r.amountPaid, r.installmentAmount);
         if (ip == null || ip >= r.installmentTotal) return;
@@ -101,7 +101,7 @@ export const NotificationProvider = ({ children }) => {
         return;
       }
 
-      // ── Case 2: no installment plan but has firstInstallmentDue ─────────
+      // ── Case 2: no installment plan but has firstInstallmentDue ───────────────────────────
       if (r.firstInstallmentDue && !r.amountPaid) {
         const fd = r.firstInstallmentDue?.toDate ? r.firstInstallmentDue.toDate() : new Date(r.firstInstallmentDue);
         const daysUntil = Math.ceil((fd - now) / 86400000);
@@ -120,7 +120,7 @@ export const NotificationProvider = ({ children }) => {
         return;
       }
 
-      // ── Case 3: plain credit term with only an overall dueDate ───────────
+      // ── Case 3: plain credit term with only an overall dueDate ───────────────────────────
       if (r.dueDate) {
         const dd = r.dueDate?.toDate ? r.dueDate.toDate() : new Date(r.dueDate);
         const daysUntil = Math.ceil((dd - now) / 86400000);

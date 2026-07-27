@@ -66,6 +66,7 @@ export const AuthProvider = ({ children }) => {
     login,
     logout,
     updateProfile,
+    // ─── Role checkers ────────────────────────────────────────────────────────────────
     isSuperAdmin:    () => permissions.isSuperAdmin(user),
     isCEO:           () => permissions.isCEO(user),
     isAdmin:         () => permissions.isAdmin(user),
@@ -74,6 +75,7 @@ export const AuthProvider = ({ children }) => {
     isSalesRep:      () => permissions.isSalesRep(user),
     isMedRepManager: () => permissions.isMedRepManager(user),
     isManagement:    () => permissions.isManagement(user),
+    // ─── Module permission checkers ──────────────────────────────────────────────────
     canAccessDashboard:      () => permissions.canAccessDashboard(user),
     canAccessCEODashboard:   () => permissions.canAccessCEODashboard(user),
     canAccessSales:          () => permissions.canAccessSales(user),
