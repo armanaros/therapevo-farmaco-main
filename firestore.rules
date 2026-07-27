@@ -1,0 +1,60 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── Helper functions ──────────────────────────────────────────────────────
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function userRole() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
+    }
+
+    function isManagement() {
+      return userRole() in ['super_admin', 'ceo', 'admin'];
+    }
+
+    function isManagerOrAbove() {
+      return userRole() in ['super_admin', 'ceo', 'admin', 'med_rep_manager'];
+    }
+
+    function isSalesRep() {
+      return userRole() == 'sales_rep';
+    }
+
+    // ── Users collection ──────────────────────────────────────────────────────
+    match /users/{userId} {
+      // Allow unauthenticated read for setup check (first-run detection)
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+
+    // ── Sales Transactions ────────────────────────────────────────────────────
+    // Sales reps can only read/write their OWN transactions.
+    // Managers and above can read all transactions.
+    match /sales_transactions/{txnId} {
+      allow read: if isAuthenticated() && (
+        isManagerOrAbove() ||
+        userRole() in ['accounting', 'logistics'] ||
+        (isSalesRep() && resource.data.createdBy == request.auth.uid)
+      );
+      allow create: if isAuthenticated() && (
+        isManagerOrAbove() ||
+        (isSalesRep() && request.resource.data.createdBy == request.auth.uid)
+      );
+      allow update: if isAuthenticated() && (
+        isManagerOrAbove() ||
+        // Sales reps can only update their own pending sales (e.g. cancel before approval)
+        (isSalesRep() && resource.data.createdBy == request.auth.uid &&
+          resource.data.status == 'pending_approval')
+      );
+      allow delete: if isAuthenticated() && isManagement();
+    }
+
+    // ── All other collections: authenticated users only ───────────────────────
+    match /{document=**} {
+      allow read, write: if request.auth != null;
+    }
+  }
+}
