@@ -43,7 +43,7 @@ const FieldValue = admin.firestore.FieldValue;
 const now = new Date();
 const daysAgo = (n) => new Date(now - n * 864e5);
 
-// ── Demo Users ─────────────────────────────────────────────────────────────────
+// ── Demo Users ─────────────────────────────────────────────────────────────────────────
 
 const DEMO_USERS = [
   {
@@ -75,7 +75,7 @@ const DEMO_USERS = [
   },
 ];
 
-// ── Product Categories ─────────────────────────────────────────────────────────
+// ── Product Categories ─────────────────────────────────────────────────────────────────
 
 const CATEGORIES = [
   { id: 'cat_rx',       name: 'Prescription Medicine',  sortOrder: 1, isActive: true },
@@ -85,7 +85,7 @@ const CATEGORIES = [
   { id: 'cat_equip',    name: 'Medical Equipment',       sortOrder: 5, isActive: true },
 ];
 
-// ── Products ───────────────────────────────────────────────────────────────────
+// ── Products ───────────────────────────────────────────────────────────────────────────
 
 const PRODUCTS = [
   // Prescription
@@ -126,7 +126,7 @@ const PRODUCTS = [
   { name: 'Fingertip Pulse Oximeter',      categoryId: 'cat_equip',    sku: 'EQP-POX-FGR', unit: 'piece',            price: 980,  costOfGoods: 390, stockLevel: 18,  lowStockThreshold: 4,   isActive: true, requiresPrescription: false, description: 'SpO2 and pulse rate monitor.' },
 ];
 
-// ── Medical Reps ───────────────────────────────────────────────────────────────
+// ── Medical Reps ─────────────────────────────────────────────────────────────────────────
 
 const MED_REPS = [
   { name: 'Carlo Cruz',     territory: 'Metro Manila — NCR',   phone: '09191003003', email: 'demo_medrep@therapevo.local',  isActive: true, targetMonthly: 120000, isLinkedUser: true  },
@@ -135,7 +135,7 @@ const MED_REPS = [
   { name: 'Liza Gutierrez', territory: 'Visayas — Region VII', phone: '09221006006', email: 'liza.g@therapevo.local',       isActive: true, targetMonthly: 85000,  isLinkedUser: false },
 ];
 
-// ── Customers ─────────────────────────────────────────────────────────────────
+// ── Customers ─────────────────────────────────────────────────────────────────────────
 
 const CUSTOMERS = [
   { name: "St. Luke's Medical Center",  contactPerson: 'Dr. Anna Lim',      phone: '02-88888888', address: 'Quezon City, Metro Manila', creditLimit: 500000, paymentTerms: 30 },
@@ -155,10 +155,10 @@ function randomFrom(arr)     { return arr[Math.floor(Math.random() * arr.length)
 // ── Main ──────────────────────────────────────────────────────────────────────
 
 async function seed() {
-  console.log('🌱  Starting Therapevo Farmaco demo seed...\n');
+  console.log('\uD83C\uDF31  Starting Therapevo Farmaco demo seed...\n');
 
   // 1. Demo users
-  console.log('👤  Creating demo users...');
+  console.log('\uD83D\uDC64  Creating demo users...');
   const userUids = {};
   for (const u of DEMO_USERS) {
     try {
@@ -167,11 +167,11 @@ async function seed() {
       if (existing) {
         uid = existing.uid;
         await authAdmin.updateUser(uid, { password: u.password, displayName: `${u.firstName} ${u.lastName}` });
-        console.log(`   ✓ Updated: ${u.username}`);
+        console.log(`   \u2713 Updated: ${u.username}`);
       } else {
         const record = await authAdmin.createUser({ email: u.email, password: u.password, displayName: `${u.firstName} ${u.lastName}` });
         uid = record.uid;
-        console.log(`   ✓ Created: ${u.username}`);
+        console.log(`   \u2713 Created: ${u.username}`);
       }
       userUids[u.username] = uid;
       await db.collection('users').doc(uid).set({
@@ -189,29 +189,29 @@ async function seed() {
         updatedAt:  FieldValue.serverTimestamp(),
       });
     } catch (err) {
-      console.error(`   ✗ Failed for ${u.username}: ${err.message}`);
+      console.error(`   \u2717 Failed for ${u.username}: ${err.message}`);
     }
   }
 
   // 2. Product categories
-  console.log('\n📂  Seeding product categories...');
+  console.log('\n\uD83D\uDCC2  Seeding product categories...');
   for (const cat of CATEGORIES) {
     const { id, ...data } = cat;
     await db.collection('product_categories').doc(id).set({ ...data, createdAt: FieldValue.serverTimestamp(), updatedAt: FieldValue.serverTimestamp() });
-    console.log(`   ✓ ${cat.name}`);
+    console.log(`   \u2713 ${cat.name}`);
   }
 
   // 3. Products
-  console.log('\n💊  Seeding pharmaceutical products...');
+  console.log('\n\uD83D\uDC8A  Seeding pharmaceutical products...');
   const productIds = {};
   for (const p of PRODUCTS) {
     const ref = await db.collection('products').add({ ...p, createdAt: FieldValue.serverTimestamp(), updatedAt: FieldValue.serverTimestamp() });
     productIds[p.sku] = ref.id;
-    console.log(`   ✓ ${p.name}`);
+    console.log(`   \u2713 ${p.name}`);
   }
 
   // 4. Inventory
-  console.log('\n📦  Seeding inventory...');
+  console.log('\n\uD83D\uDCE6  Seeding inventory...');
   for (const p of PRODUCTS) {
     await db.collection('inventory').add({
       productId:         productIds[p.sku],
@@ -226,10 +226,10 @@ async function seed() {
       updatedAt:         FieldValue.serverTimestamp(),
     });
   }
-  console.log(`   ✓ ${PRODUCTS.length} inventory records`);
+  console.log(`   \u2713 ${PRODUCTS.length} inventory records`);
 
   // 5. Medical reps
-  console.log('\n🩺  Seeding medical representatives...');
+  console.log('\n\uD83E\uDE7A  Seeding medical representatives...');
   const repIds = [];
   for (const rep of MED_REPS) {
     const { isLinkedUser, ...repData } = rep;
@@ -243,11 +243,11 @@ async function seed() {
       updatedAt:   FieldValue.serverTimestamp(),
     });
     repIds.push(ref.id);
-    console.log(`   ✓ ${rep.name}`);
+    console.log(`   \u2713 ${rep.name}`);
   }
 
   // 6. Accounts receivable (customers with outstanding balances)
-  console.log('\n🏥  Seeding accounts receivable...');
+  console.log('\n\uD83C\uDFE5  Seeding accounts receivable...');
   for (const c of CUSTOMERS) {
     const total = randomInt(20000, 180000);
     const paid  = randomInt(0, Math.floor(total * 0.6));
@@ -263,11 +263,11 @@ async function seed() {
       createdAt:       FieldValue.serverTimestamp(),
       updatedAt:       FieldValue.serverTimestamp(),
     });
-    console.log(`   ✓ ${c.name}`);
+    console.log(`   \u2713 ${c.name}`);
   }
 
   // 7. Sales transactions
-  console.log('\n🧣  Creating sales transactions...');
+  console.log('\n\uD83E\uDDFE  Creating sales transactions...');
   const productList = PRODUCTS.map((p) => ({ id: productIds[p.sku], ...p }));
   const salesScenarios = [
     { ago: 1,  customer: CUSTOMERS[0], status: 'completed',       repIdx: 0 },
@@ -332,23 +332,23 @@ async function seed() {
       await db.collection('sale_items').add({ transactionId: txRef.id, ...item, createdAt: txDate });
     }
   }
-  console.log(`   ✓ ${salesScenarios.length} sales transactions created`);
+  console.log(`   \u2713 ${salesScenarios.length} sales transactions created`);
 
   // 8. Expenses
-  console.log('\n💸  Seeding expenses...');
+  console.log('\n\uD83D\uDCB8  Seeding expenses...');
   const EXPENSES = [
-    { description: 'Cold chain logistics — NCR delivery run',    category: 'Logistics',        amount: 12500,  ago: 2  },
-    { description: 'Warehouse rent — June 2026',                 category: 'Administrative',   amount: 45000,  ago: 5  },
-    { description: 'Staff salaries — May 2026',                  category: 'Salaries & Wages', amount: 180000, ago: 7  },
-    { description: 'Procurement — Amoxicillin restock',          category: 'Procurement',      amount: 38000,  ago: 8  },
-    { description: 'Delivery van fuel — June',                   category: 'Logistics',        amount: 8500,   ago: 12 },
+    { description: 'Cold chain logistics \u2014 NCR delivery run',    category: 'Logistics',        amount: 12500,  ago: 2  },
+    { description: 'Warehouse rent \u2014 June 2026',                 category: 'Administrative',   amount: 45000,  ago: 5  },
+    { description: 'Staff salaries \u2014 May 2026',                  category: 'Salaries & Wages', amount: 180000, ago: 7  },
+    { description: 'Procurement \u2014 Amoxicillin restock',          category: 'Procurement',      amount: 38000,  ago: 8  },
+    { description: 'Delivery van fuel \u2014 June',                   category: 'Logistics',        amount: 8500,   ago: 12 },
     { description: 'Regulatory compliance filing fees',          category: 'Administrative',   amount: 6200,   ago: 14 },
-    { description: 'Cold storage electricity — May',            category: 'Utilities',        amount: 22000,  ago: 15 },
-    { description: 'Procurement — Insulin Glargine restock',     category: 'Procurement',      amount: 65000,  ago: 18 },
+    { description: 'Cold storage electricity \u2014 May',            category: 'Utilities',        amount: 22000,  ago: 15 },
+    { description: 'Procurement \u2014 Insulin Glargine restock',     category: 'Procurement',      amount: 65000,  ago: 18 },
     { description: 'Sales team training seminar',                category: 'Marketing',        amount: 15000,  ago: 20 },
     { description: 'Office supplies and packaging materials',    category: 'Administrative',   amount: 4800,   ago: 22 },
-    { description: 'Vehicle maintenance — delivery van service', category: 'Maintenance',      amount: 9500,   ago: 25 },
-    { description: 'Procurement — OTC medicines bulk purchase',  category: 'Procurement',      amount: 52000,  ago: 28 },
+    { description: 'Vehicle maintenance \u2014 delivery van service', category: 'Maintenance',      amount: 9500,   ago: 25 },
+    { description: 'Procurement \u2014 OTC medicines bulk purchase',  category: 'Procurement',      amount: 52000,  ago: 28 },
   ];
   for (const exp of EXPENSES) {
     const d = admin.firestore.Timestamp.fromDate(daysAgo(exp.ago));
@@ -366,10 +366,10 @@ async function seed() {
       updatedAt:     d,
     });
   }
-  console.log(`   ✓ ${EXPENSES.length} expense records`);
+  console.log(`   \u2713 ${EXPENSES.length} expense records`);
 
   // 9. System settings
-  console.log('\n⚙️   Writing system settings...');
+  console.log('\n\u2699\uFE0F   Writing system settings...');
   await db.collection('system_settings').doc('main').set({
     companyName:   'Therapevo Farmaco',
     address:       '123 Pharmaceutical Ave., Pasig City, Metro Manila',
@@ -382,18 +382,18 @@ async function seed() {
     createdAt:     FieldValue.serverTimestamp(),
     updatedAt:     FieldValue.serverTimestamp(),
   });
-  console.log('   ✓ system_settings/main');
+  console.log('   \u2713 system_settings/main');
 
-  console.log('\n✅  Therapevo Farmaco demo seed complete!\n');
-  console.log('┌─────────────────────────────────────────────────┐');
-  console.log('│           DEMO LOGIN CREDENTIALS               │');
-  console.log('├────────────────┬───────────────┬──────────────┤');
-  console.log('│ Role           │ Username      │ Password     │');
-  console.log('├────────────────┼───────────────┼──────────────┤');
-  console.log('│ Admin          │ demo_admin    │ Demo@2026    │');
-  console.log('│ Manager        │ demo_manager  │ Demo@2026    │');
-  console.log('│ Med Rep        │ demo_medrep   │ Demo@2026    │');
-  console.log('└────────────────┴───────────────┴──────────────┘');
+  console.log('\n\u2705  Therapevo Farmaco demo seed complete!\n');
+  console.log('\u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510');
+  console.log('\u2502           DEMO LOGIN CREDENTIALS               \u2502');
+  console.log('\u251c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u252c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u252c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2524');
+  console.log('\u2502 Role           \u2502 Username      \u2502 Password     \u2502');
+  console.log('\u251c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2524');
+  console.log('\u2502 Admin          \u2502 demo_admin    \u2502 Demo@2026    \u2502');
+  console.log('\u2502 Manager        \u2502 demo_manager  \u2502 Demo@2026    \u2502');
+  console.log('\u2502 Med Rep        \u2502 demo_medrep   \u2502 Demo@2026    \u2502');
+  console.log('\u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2534\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2534\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518');
 
   process.exit(0);
 }
