@@ -30,15 +30,12 @@ export const getUserByUsername = async (username) => {
 export const createUser = async (userData) => {
   const { username, email, password, firstName, lastName, role, phone } = userData;
   const emailToUse = email || `${username.trim().toLowerCase()}@therapevo.local`;
-
   const secondaryApp = initializeApp(firebaseConfig, 'secondary');
   const secondaryAuth = getAuth(secondaryApp);
-
   try {
     const cred = await createUserWithEmailAndPassword(secondaryAuth, emailToUse, password);
     const uid = cred.user.uid;
     const resolvedRole = role || 'employee';
-
     await setDoc(doc(db, COLLECTIONS.USERS, uid), {
       username: username.trim().toLowerCase(),
       email: emailToUse,
@@ -50,27 +47,15 @@ export const createUser = async (userData) => {
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
     });
-
     if (resolvedRole === 'sales_rep') {
       const displayName = `${firstName.trim()} ${lastName.trim()}`.trim() || username.trim();
       const repRef = await addDoc(collection(db, COLLECTIONS.MEDICAL_REPS), {
-        name:          displayName,
-        phone:         phone?.trim() || '',
-        email:         emailToUse,
-        territory:     '',
-        address:       '',
-        status:        'active',
-        quotaMonthly:  0,
-        salesThisMonth: 0,
-        notes:         '',
-        managerId:     '',
-        userId:        uid,
-        createdAt:     serverTimestamp(),
-        updatedAt:     serverTimestamp(),
+        name: displayName, phone: phone?.trim() || '', email: emailToUse,
+        territory: '', address: '', status: 'active', quotaMonthly: 0, salesThisMonth: 0,
+        notes: '', managerId: '', userId: uid, createdAt: serverTimestamp(), updatedAt: serverTimestamp(),
       });
       await updateDoc(doc(db, COLLECTIONS.USERS, uid), { repId: repRef.id });
     }
-
     logger.info('User created:', uid);
     return { uid };
   } finally {
@@ -79,8 +64,7 @@ export const createUser = async (userData) => {
 };
 
 export const updateUser = async (uid, data) => {
-  const ref = doc(db, COLLECTIONS.USERS, uid);
-  await updateDoc(ref, { ...data, updatedAt: serverTimestamp() });
+  await updateDoc(doc(db, COLLECTIONS.USERS, uid), { ...data, updatedAt: serverTimestamp() });
 };
 
 export const deleteUser = async (uid) => {
@@ -89,7 +73,6 @@ export const deleteUser = async (uid) => {
 
 export const subscribeToUsers = (callback) => {
   return onSnapshot(usersRef, (snap) => {
-    const users = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
-    callback(users);
+    callback(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
   });
 };

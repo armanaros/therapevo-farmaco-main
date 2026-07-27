@@ -16,17 +16,12 @@ const storeStatusRef = doc(db, COLLECTIONS.SYSTEM_SETTINGS, 'store');
 export const getSettings = async () => {
   const snapshot = await getDocs(settingsRef);
   const settings = {};
-  snapshot.docs.forEach((d) => {
-    settings[d.id] = d.data();
-  });
+  snapshot.docs.forEach((d) => { settings[d.id] = d.data(); });
   return settings;
 };
 
 export const updateSetting = async (key, value) => {
-  await setDoc(doc(settingsRef, key), {
-    value,
-    updatedAt: serverTimestamp(),
-  }, { merge: true });
+  await setDoc(doc(settingsRef, key), { value, updatedAt: serverTimestamp() }, { merge: true });
 };
 
 export const setStoreStatus = async (isOpen, closedMessage = '', restaurantId = null) => {
@@ -38,13 +33,7 @@ export const setStoreStatus = async (isOpen, closedMessage = '', restaurantId = 
 export const subscribeToStoreStatus = (callback) => {
   return onSnapshot(
     storeStatusRef,
-    (snap) => {
-      if (snap.exists()) callback(snap.data());
-      else callback({ isOpen: true, closedMessage: '' });
-    },
-    (err) => {
-      console.error('subscribeToStoreStatus error:', err);
-      callback({ isOpen: true, closedMessage: '' });
-    }
+    (snap) => { if (snap.exists()) callback(snap.data()); else callback({ isOpen: true, closedMessage: '' }); },
+    (err) => { console.error('subscribeToStoreStatus error:', err); callback({ isOpen: true, closedMessage: '' }); }
   );
 };
