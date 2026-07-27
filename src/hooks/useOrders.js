@@ -19,6 +19,7 @@ const useOrders = (daysBack = 30) => {
       console.log('[useOrders] Received orders:', data.length);
       
       if (!isInitialLoadRef.current && data.length > prevOrderCountRef.current) {
+        const newest = data[0];
         playNotificationSound();
       }
       
