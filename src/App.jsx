@@ -31,8 +31,11 @@ const SettingsPage            = lazy(() => import('@/pages/SettingsPage'));
 const AppRoutes = () => (
   <Suspense fallback={<LoadingSpinner fullscreen />}>
     <Routes>
+      {/* Public routes */}
       <Route path="/setup" element={<SetupPage />} />
       <Route path="/login" element={<LoginPage />} />
+
+      {/* Protected routes */}
       <Route path="/dashboard"           element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
       <Route path="/pos"                 element={<ProtectedRoute><POSPage /></ProtectedRoute>} />
       <Route path="/sales"               element={<ProtectedRoute><SalesPage /></ProtectedRoute>} />
@@ -46,6 +49,8 @@ const AppRoutes = () => (
       <Route path="/users"               element={<ProtectedRoute><UsersPage /></ProtectedRoute>} />
       <Route path="/profile"             element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
       <Route path="/settings"            element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
+
+      {/* Fallback */}
       <Route path="/" element={<Navigate to="/login" replace />} />
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
