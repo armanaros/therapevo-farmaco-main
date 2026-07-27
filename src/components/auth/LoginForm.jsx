@@ -129,7 +129,7 @@ const LoginForm = ({ onLogin }) => {
         {IS_DEMO && (
           <>
             <Divider sx={{ mt: 3, mb: 2 }}>
-              <Chip label="DEMO \u2014 Quick Login" size="small" color="warning" />
+              <Chip label="DEMO — Quick Login" size="small" color="warning" />
             </Divider>
             <Stack spacing={1}>
               {DEMO_ACCOUNTS.map((acc) => (
