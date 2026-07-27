@@ -66,7 +66,7 @@ admin.initializeApp({
 });
 
 async function main() {
-  console.log(`\n🔒  Deploying Firestore security rules to: ${PROJECT_ID}\n`);
+  console.log(`\n\uD83D\uDD12  Deploying Firestore security rules to: ${PROJECT_ID}\n`);
 
   const rules = admin.securityRules();
 
@@ -74,11 +74,11 @@ async function main() {
   const ruleset = await rules.createRuleset(
     rules.createRulesFileFromSource('firestore.rules', RULES_SOURCE),
   );
-  console.log(`   ✓ Ruleset created: ${ruleset.name}`);
+  console.log(`   \u2713 Ruleset created: ${ruleset.name}`);
 
   await rules.releaseFirestoreRuleset(ruleset);
-  console.log('   ✓ Ruleset released as Firestore default\n');
-  console.log('✅  Firestore security rules deployed successfully.\n');
+  console.log('   \u2713 Ruleset released as Firestore default\n');
+  console.log('\u2705  Firestore security rules deployed successfully.\n');
 
   await admin.app().delete();
 }

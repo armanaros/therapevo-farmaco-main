@@ -56,13 +56,13 @@ async function deleteCollection(collectionName) {
   }
   if (count > 0) batches.push(batch.commit());
   await Promise.all(batches);
-  console.log(`   ✓ Wiped ${snapshot.size} docs from ${collectionName}`);
+  console.log(`   \u2713 Wiped ${snapshot.size} docs from ${collectionName}`);
 }
 
 // ── Main ──────────────────────────────────────────────────────────────────────
 
 async function reset() {
-  console.log('🗑️   Wiping demo collections...\n');
+  console.log('\uD83D\uDDD1\uFE0F   Wiping demo collections...\n');
 
   const COLLECTIONS_TO_WIPE = [
     'menu_categories',
@@ -76,7 +76,7 @@ async function reset() {
     await deleteCollection(col);
   }
 
-  console.log('\n🌱  Re-seeding...\n');
+  console.log('\n\uD83C\uDF31  Re-seeding...\n');
 
   // Spawn seed script
   const { execSync } = require('child_process');

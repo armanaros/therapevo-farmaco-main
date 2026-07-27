@@ -78,7 +78,7 @@ async function main() {
     const url  = IMAGE_MAP[name];
     if (url) {
       batch.update(doc.ref, { imageUrl: url });
-      console.log(`  ✓  ${name}`);
+      console.log(`  \u2713  ${name}`);
       updated++;
     } else {
       console.warn(`  ?  No image mapped for: "${name}"`);
@@ -87,7 +87,7 @@ async function main() {
   });
 
   await batch.commit();
-  console.log(`\nDone — ${updated} items updated, ${skipped} skipped.`);
+  console.log(`\nDone \u2014 ${updated} items updated, ${skipped} skipped.`);
   process.exit(0);
 }
 
