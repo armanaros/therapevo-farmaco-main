@@ -24,28 +24,20 @@ export const getCategories = async () => {
 
 export const createCategory = async (data) => {
   const docRef = await addDoc(categoriesRef, {
-    ...data,
-    isActive: true,
-    sortOrder: data.sortOrder || 0,
-    createdAt: serverTimestamp(),
+    ...data, isActive: true, sortOrder: data.sortOrder || 0, createdAt: serverTimestamp(),
   });
   logger.info('Category created:', docRef.id);
   return docRef.id;
 };
 
 export const updateCategory = async (id, data) => {
-  await updateDoc(doc(categoriesRef, id), {
-    ...data,
-    updatedAt: serverTimestamp(),
-  });
+  await updateDoc(doc(categoriesRef, id), { ...data, updatedAt: serverTimestamp() });
 };
 
 export const deleteCategory = async (id) => {
   const itemsSnapshot = await getDocs(itemsRef);
   const hasItems = itemsSnapshot.docs.some((d) => d.data().categoryId === id);
-  if (hasItems) {
-    throw new Error('Cannot delete category with existing menu items. Move or delete items first.');
-  }
+  if (hasItems) throw new Error('Cannot delete category with existing menu items.');
   await deleteDoc(doc(categoriesRef, id));
 };
 
@@ -57,24 +49,18 @@ export const subscribeToCategories = (callback) => {
 
 export const getAllItems = async () => {
   const snapshot = await getDocs(itemsRef);
-  return snapshot.docs
-    .map((d) => ({ id: d.id, ...d.data() }))
-    .sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+  return snapshot.docs.map((d) => ({ id: d.id, ...d.data() })).sort((a, b) => (a.name || '').localeCompare(b.name || ''));
 };
 
 export const createItem = async (data) => {
   const docRef = await addDoc(itemsRef, {
     ...data,
-    price: Number(data.price || 0),
-    costOfGoods: Number(data.costOfGoods || 0),
-    stockLevel: Number(data.stockLevel || 0),
-    lowStockThreshold: Number(data.lowStockThreshold || 5),
+    price: Number(data.price || 0), costOfGoods: Number(data.costOfGoods || 0),
+    stockLevel: Number(data.stockLevel || 0), lowStockThreshold: Number(data.lowStockThreshold || 5),
     preparationTime: data.preparationTime || 15,
     isAvailable: data.isAvailable !== undefined ? data.isAvailable : true,
-    isActive: true,
-    sortOrder: data.sortOrder || 0,
-    availableOnline: data.availableOnline !== false,
-    availableOnPOS: data.availableOnPOS !== false,
+    isActive: true, sortOrder: data.sortOrder || 0,
+    availableOnline: data.availableOnline !== false, availableOnPOS: data.availableOnPOS !== false,
     createdAt: serverTimestamp(),
   });
   logger.info('Menu item created:', docRef.id);
@@ -95,9 +81,7 @@ export const deleteItem = async (id) => {
 
 export const subscribeToItems = (callback) => {
   return onSnapshot(itemsRef, (snapshot) => {
-    const items = snapshot.docs
-      .map((d) => ({ id: d.id, ...d.data() }))
-      .sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+    const items = snapshot.docs.map((d) => ({ id: d.id, ...d.data() })).sort((a, b) => (a.name || '').localeCompare(b.name || ''));
     callback(items);
   });
 };
@@ -106,8 +90,6 @@ export const getFullMenu = async () => {
   const [categories, items] = await Promise.all([getCategories(), getAllItems()]);
   return categories.map((cat) => ({
     ...cat,
-    items: items
-      .filter((item) => String(item.categoryId) === String(cat.id))
-      .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0)),
+    items: items.filter((item) => String(item.categoryId) === String(cat.id)).sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0)),
   }));
 };

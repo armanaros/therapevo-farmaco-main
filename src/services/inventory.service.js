@@ -63,71 +63,34 @@ export const getMovementsForProduct = async (productId, maxRows = 50) => {
   return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
 };
 
-export const adjustStock = async ({
-  productId,
-  productName,
-  adjustmentQty,
-  type = 'manual_adjustment',
-  reason,
-  userId,
-}) => {
+export const adjustStock = async ({ productId, productName, adjustmentQty, type = 'manual_adjustment', reason, userId }) => {
   const productRef = doc(productsRef, productId);
-
-  await updateDoc(productRef, {
-    stockLevel: increment(adjustmentQty),
-    updatedAt:  serverTimestamp(),
-  });
-
+  await updateDoc(productRef, { stockLevel: increment(adjustmentQty), updatedAt: serverTimestamp() });
   await addDoc(movementsRef, {
-    productId,
-    productName: productName || '',
-    type,
-    quantity:    Math.abs(adjustmentQty),
-    direction:   adjustmentQty >= 0 ? 'in' : 'out',
-    saleId:      null,
-    reason:      reason || '',
-    performedBy: userId || '',
-    createdAt:   serverTimestamp(),
+    productId, productName: productName || '', type,
+    quantity: Math.abs(adjustmentQty), direction: adjustmentQty >= 0 ? 'in' : 'out',
+    saleId: null, reason: reason || '', performedBy: userId || '', createdAt: serverTimestamp(),
   });
-
   await logActivity({
     type: 'stock_adjusted',
     description: `Stock ${adjustmentQty >= 0 ? 'increased' : 'decreased'} by ${Math.abs(adjustmentQty)} for ${productName}`,
-    userId,
-    meta: { productId, adjustmentQty, reason },
+    userId, meta: { productId, adjustmentQty, reason },
   });
 };
 
 export const receiveStock = async (items, userId, referenceNote = '') => {
   const batch = writeBatch(db);
-
   for (const item of items) {
     if (!item.productId || !item.quantity) continue;
     const productRef = doc(productsRef, item.productId);
-    batch.update(productRef, {
-      stockLevel: increment(Number(item.quantity)),
-      isAvailable: true,
-      updatedAt:   serverTimestamp(),
-    });
+    batch.update(productRef, { stockLevel: increment(Number(item.quantity)), isAvailable: true, updatedAt: serverTimestamp() });
     const movRef = doc(movementsRef);
     batch.set(movRef, {
-      productId:   item.productId,
-      productName: item.productName || '',
-      type:        'stock_received',
-      quantity:    Number(item.quantity),
-      direction:   'in',
-      saleId:      null,
-      reason:      referenceNote || 'Stock received',
-      performedBy: userId || '',
-      createdAt:   serverTimestamp(),
+      productId: item.productId, productName: item.productName || '', type: 'stock_received',
+      quantity: Number(item.quantity), direction: 'in', saleId: null,
+      reason: referenceNote || 'Stock received', performedBy: userId || '', createdAt: serverTimestamp(),
     });
   }
-
   await batch.commit();
-  await logActivity({
-    type: 'stock_received',
-    description: `Stock received for ${items.length} product(s). Ref: ${referenceNote}`,
-    userId,
-    meta: { itemCount: items.length, referenceNote },
-  });
+  await logActivity({ type: 'stock_received', description: `Stock received for ${items.length} product(s)`, userId, meta: { itemCount: items.length, referenceNote } });
 };
