@@ -199,7 +199,6 @@ const MenuItemList = ({ items, categories, selectedCategoryId }) => {
         ))}
       </Grid>
 
-      {/* Item form dialog */}
       {formOpen && (
         <MenuItemForm
           open={formOpen}
@@ -210,7 +209,6 @@ const MenuItemList = ({ items, categories, selectedCategoryId }) => {
         />
       )}
 
-      {/* Delete confirmation */}
       <ConfirmDialog
         open={!!deleteTarget}
         title="Delete Item"

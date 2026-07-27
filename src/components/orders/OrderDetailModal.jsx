@@ -33,7 +33,6 @@ const OrderDetailModal = ({ open, onClose, order, allOrders, onStatusChange, onP
   const isCancelled = order.status === 'cancelled';
   const isRefunded = order.paymentStatus === 'refunded';
 
-  // Customer order history
   const customerOrders = order.customerName && allOrders
     ? allOrders.filter(
         (o) =>
@@ -64,7 +63,6 @@ const OrderDetailModal = ({ open, onClose, order, allOrders, onStatusChange, onP
 
       <DialogContent dividers>
         <Stack spacing={2}>
-          {/* Order info */}
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
             <Chip label={order.orderType} size="small" sx={{ textTransform: 'capitalize' }} />
             {order.tableNumber && <Chip label={`Table ${order.tableNumber}`} size="small" />}
@@ -99,7 +97,6 @@ const OrderDetailModal = ({ open, onClose, order, allOrders, onStatusChange, onP
 
           <Divider />
 
-          {/* Items table */}
           <Table size="small">
             <TableHead>
               <TableRow>
@@ -143,7 +140,6 @@ const OrderDetailModal = ({ open, onClose, order, allOrders, onStatusChange, onP
 
           <Divider />
 
-          {/* Totals */}
           <Box>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
               <Typography variant="body2">Subtotal</Typography>
@@ -167,7 +163,6 @@ const OrderDetailModal = ({ open, onClose, order, allOrders, onStatusChange, onP
 
           <Divider />
 
-          {/* Customer order history */}
           {customerOrders.length > 0 && (
             <Box
               sx={{
@@ -184,11 +179,11 @@ const OrderDetailModal = ({ open, onClose, order, allOrders, onStatusChange, onP
               <Stack spacing={0.75} sx={{ mt: 1 }}>
                 {customerOrders.slice(0, 4).map((o) => {
                   const d = o.createdAt?.toDate?.();
-                  const dateStr = d ? d.toLocaleDateString('en-PH', { month: 'short', day: 'numeric' }) : '';
+                  const ds = d ? d.toLocaleDateString('en-PH', { month: 'short', day: 'numeric' }) : '';
                   return (
                     <Box key={o.id} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <Typography variant="caption" color="text.secondary">
-                        #{o.orderNumber} {dateStr && `\u00b7 ${dateStr}`}
+                        #{o.orderNumber} {ds && `\u00b7 ${ds}`}
                       </Typography>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         <Typography variant="caption" sx={{ fontWeight: 700 }}>{formatCurrency(o.total)}</Typography>
@@ -206,11 +201,11 @@ const OrderDetailModal = ({ open, onClose, order, allOrders, onStatusChange, onP
             </Box>
           )}
 
-          {/* Status change */}
           <TextField
             select
             label="Update Status"
-            value={order.status}            onChange={(e) => onStatusChange(order.id, e.target.value)}
+            value={order.status}
+            onChange={(e) => onStatusChange(order.id, e.target.value)}
             size="small"
             fullWidth
           >
@@ -221,7 +216,6 @@ const OrderDetailModal = ({ open, onClose, order, allOrders, onStatusChange, onP
             ))}
           </TextField>
 
-          {/* Refund control — only for cancelled orders */}
           {isCancelled && (
             <Box
               sx={{

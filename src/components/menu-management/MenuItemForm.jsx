@@ -120,7 +120,6 @@ const MenuItemForm = ({ open, onClose, onSave, item = null, categories = [] }) =
         <DialogTitle>{isEdit ? 'Edit Menu Item' : 'Add Menu Item'}</DialogTitle>
         <DialogContent>
           <Stack spacing={2} sx={{ mt: 1 }}>
-            {/* Image URL */}
             <TextField
               label="Photo URL"
               value={form.imageUrl}
@@ -129,7 +128,7 @@ const MenuItemForm = ({ open, onClose, onSave, item = null, categories = [] }) =
               placeholder="Paste a direct image link here"
               helperText={
                 imgError
-                  ? '\u26a0 Link didn\'t load \u2014 in Google Images, right-click the image \u2192 "Open image in new tab", then copy that URL'
+                  ? "\u26a0 Link didn't load \u2014 in Google Images, right-click the image \u2192 \"Open image in new tab\", then copy that URL"
                   : 'Tip: in Google Images, right-click the photo \u2192 "Open image in new tab" \u2192 copy the URL from the address bar'
               }
               error={imgError}
@@ -260,7 +259,6 @@ const MenuItemForm = ({ open, onClose, onSave, item = null, categories = [] }) =
               label="Available for ordering"
             />
 
-            {/* Channel availability */}
             <Box>
               <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }}>Available on</Typography>
               <Stack direction="row" spacing={2}>
