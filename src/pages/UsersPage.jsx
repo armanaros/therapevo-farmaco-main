@@ -45,17 +45,14 @@ export default function UsersPage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch]   = useState('');
 
-  // Create dialog
   const [createOpen, setCreateOpen] = useState(false);
   const [createForm, setCreateForm] = useState(EMPTY_CREATE);
   const [creating, setCreating]     = useState(false);
 
-  // Edit dialog
   const [editTarget, setEditTarget] = useState(null);
   const [editForm, setEditForm]     = useState({});
   const [editing, setEditing]       = useState(false);
 
-  // Delete dialog
   const [deleteTarget, setDeleteTarget] = useState(null);
 
   useEffect(() => {
@@ -77,7 +74,6 @@ export default function UsersPage() {
     );
   }, [users, search]);
 
-  // ── Create ────────────────────────────────────────────────────────────────────────────
   const handleCreate = async (e) => {
     e.preventDefault();
     setCreating(true);
@@ -93,7 +89,6 @@ export default function UsersPage() {
     }
   };
 
-  // ── Edit ──────────────────────────────────────────────────────────────────────────────
   const openEdit = (u) => {
     setEditTarget(u);
     setEditForm({
@@ -118,7 +113,6 @@ export default function UsersPage() {
     }
   };
 
-  // ── Toggle active ────────────────────────────────────────────────────────────────────
   const handleToggleActive = async (u) => {
     const next = u.isActive === false ? true : false;
     try {
@@ -129,7 +123,6 @@ export default function UsersPage() {
     }
   };
 
-  // ── Delete ───────────────────────────────────────────────────────────────────────────
   const handleDelete = async () => {
     if (demoBlock()) { setDeleteTarget(null); return; }
     try {

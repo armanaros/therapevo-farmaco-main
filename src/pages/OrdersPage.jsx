@@ -28,7 +28,6 @@ export default function OrdersPage() {
 
   console.log('[OrdersPage] orders from hook:', orders.length, 'loading:', loading);
 
-  // Filter orders by date range
   const dateFilteredOrders = useMemo(() => {
     return orders.filter((o) => {
       const ref = o.createdAt?.toDate?.();
@@ -40,7 +39,6 @@ export default function OrdersPage() {
   const filteredOrders = useMemo(() => {
     let result = statusFilter === 'all' ? dateFilteredOrders : dateFilteredOrders.filter((o) => o.status === statusFilter);
 
-    // Search by order number or customer name
     if (searchQuery.trim()) {
       const q = searchQuery.trim().toLowerCase();
       result = result.filter(
@@ -50,7 +48,6 @@ export default function OrdersPage() {
       );
     }
 
-    // Sort
     const sorted = [...result];
     if (sortBy === 'oldest') {
       sorted.sort((a, b) => (a.createdAt?.toDate?.()?.getTime() || 0) - (b.createdAt?.toDate?.()?.getTime() || 0));
@@ -76,10 +73,8 @@ export default function OrdersPage() {
       .reduce((sum, o) => sum + (o.total || 0), 0);
   }, [dateFilteredOrders]);
 
-  // Reset keyboard focus when filters/search change
   useEffect(() => { setFocusedIndex(-1); }, [statusFilter, searchQuery, sortBy, dateFrom, dateTo]);
 
-  // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (selectedOrder) return;
@@ -105,7 +100,6 @@ export default function OrdersPage() {
     try {
       await updateOrderStatus(orderId, status);
       toast.success(`Order updated to ${status.replace(/_/g, ' ')}`);
-      // Update selected order if it's the one being changed
       if (selectedOrder?.id === orderId) {
         setSelectedOrder((prev) => prev ? { ...prev, status } : null);
       }
@@ -130,7 +124,6 @@ export default function OrdersPage() {
     try {
       await removeOrderItem(orderId, itemIndex);
       toast.success('Item removed from order');
-      // Update selectedOrder if it's the one being modified
       if (selectedOrder?.id === orderId) {
         setSelectedOrder((prev) => {
           if (!prev) return null;

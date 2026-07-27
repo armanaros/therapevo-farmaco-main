@@ -156,7 +156,9 @@ const POSContent = () => {
 
   return (
     <Box sx={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
+      {/* Menu area */}
       <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+        {/* Top bar */}
         <Box
           sx={{
             display: 'flex',
@@ -182,6 +184,7 @@ const POSContent = () => {
             POS
           </Typography>
 
+          {/* Daily sales summary */}
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, ml: 1 }}>
             <Chip
               icon={<PointOfSale sx={{ fontSize: 16 }} />}
@@ -200,6 +203,7 @@ const POSContent = () => {
 
           <Box sx={{ flex: 1 }} />
 
+          {/* Recent orders button */}
           <IconButton onClick={() => setRecentOrdersOpen(true)} size="small" title="Recent Orders">
             <Receipt />
           </IconButton>
@@ -213,17 +217,20 @@ const POSContent = () => {
           )}
         </Box>
 
+        {/* Menu browser */}
         <Box sx={{ flex: 1, overflow: 'hidden' }}>
           <MenuBrowser menu={availableMenu} onAddItem={handleAddItem} />
         </Box>
       </Box>
 
+      {/* Cart - desktop/tablet sidebar */}
       {!isMobile && (
         <Box sx={{ width: { md: 320, lg: 380 }, flexShrink: 0 }}>
           <CartPanel onCheckout={handleCheckout} submitting={submitting} />
         </Box>
       )}
 
+      {/* Cart - mobile drawer */}
       {isMobile && (
         <>
           <Drawer
@@ -249,6 +256,7 @@ const POSContent = () => {
         </>
       )}
 
+      {/* Recent orders drawer */}
       <Drawer
         anchor="left"
         open={recentOrdersOpen}
@@ -260,6 +268,7 @@ const POSContent = () => {
         />
       </Drawer>
 
+      {/* Cash change calculator dialog */}
       <CashChangeDialog
         open={cashDialogOpen}
         onClose={() => setCashDialogOpen(false)}
@@ -267,6 +276,7 @@ const POSContent = () => {
         onPrintReceipt={() => setPrintReceiptOpen(true)}
       />
 
+      {/* Digital payment dialog */}
       <DigitalPaymentDialog
         open={digitalDialogOpen}
         onClose={() => setDigitalDialogOpen(false)}
@@ -275,6 +285,7 @@ const POSContent = () => {
         onPrintReceipt={() => setPrintReceiptOpen(true)}
       />
 
+      {/* Print receipt dialog */}
       <PrintReceiptDialog
         open={printReceiptOpen}
         onClose={() => setPrintReceiptOpen(false)}
