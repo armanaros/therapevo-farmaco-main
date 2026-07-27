@@ -38,12 +38,12 @@ export default function DataManagementPage() {
 
   const [tab, setTab] = useState(0);
 
-  // ── Export state ──────────────────────────────────────────────────────
+  // ── Export state ────────────────────────────────────────────────────────────────────────
   const [exportSelected, setExportSelected] = useState([]);
   const [exporting, setExporting] = useState(false);
   const [exportProgress, setExportProgress] = useState(null);
 
-  // ── Import state ──────────────────────────────────────────────────────
+  // ── Import state ────────────────────────────────────────────────────────────────────────
   const [importFile, setImportFile] = useState(null);
   const [importFileName, setImportFileName] = useState('');
   const [importSelected, setImportSelected] = useState([]);
@@ -53,7 +53,7 @@ export default function DataManagementPage() {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const fileInputRef = useRef(null);
 
-  // ── Clear data state ────────────────────────────────────────────────────
+  // ── Clear data state ─────────────────────────────────────────────────────────────────────
   const [clearSelected, setClearSelected] = useState([]);
   const [clearing, setClearing] = useState(false);
   const [clearProgress, setClearProgress] = useState(null);
@@ -65,7 +65,7 @@ export default function DataManagementPage() {
 
   const labelFor = (key) => allExportSectionItems().find((s) => s.key === key)?.label || key;
 
-  // ── Export helpers ─────────────────────────────────────────────────────────
+  // ── Export helpers ────────────────────────────────────────────────────────────────────────
   const allExportKeys = allExportSectionItems().map((s) => s.key);
   const allExportSelected = exportSelected.length === allExportKeys.length;
 
@@ -104,7 +104,7 @@ export default function DataManagementPage() {
     }
   };
 
-  // ── Import helpers ─────────────────────────────────────────────────────────
+  // ── Import helpers ────────────────────────────────────────────────────────────────────────
   const handleFileChange = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -160,7 +160,7 @@ export default function DataManagementPage() {
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
-  // ── Clear data helpers ────────────────────────────────────────────────────────
+  // ── Clear data helpers ───────────────────────────────────────────────────────────────────────
   const allClearKeys = allExportSectionItems().map((s) => s.key);
   const allClearSelected = clearSelected.length === allClearKeys.length;
 
@@ -250,7 +250,7 @@ export default function DataManagementPage() {
             />
           </Tabs>
 
-          {/* ── EXPORT TAB ────────────────────────────────────────────────────────────────── */}
+          {/* ── EXPORT TAB ──────────────────────────────────────────────────────────────────── */}
           <TabPanel value={tab} index={0}>
             <Box sx={{ p: 3, pt: 1 }}>
               <Alert severity="info" sx={{ mb: 3 }}>
@@ -333,7 +333,7 @@ export default function DataManagementPage() {
             </Box>
           </TabPanel>
 
-          {/* ── IMPORT TAB ────────────────────────────────────────────────────────────────── */}
+          {/* ── IMPORT TAB ──────────────────────────────────────────────────────────────────── */}
           <TabPanel value={tab} index={1}>
             <Box sx={{ p: 3, pt: 1 }}>
               <Alert severity="warning" sx={{ mb: 3 }}>
@@ -493,7 +493,7 @@ export default function DataManagementPage() {
             </Box>
           </TabPanel>
 
-          {/* ── CLEAR DATA TAB ─────────────────────────────────────────────────────────────── */}
+          {/* ── CLEAR DATA TAB ─────────────────────────────────────────────────────────────────── */}
           <TabPanel value={tab} index={2}>
             <Box sx={{ p: 3, pt: 1 }}>
               {!canClearData ? (
@@ -610,7 +610,7 @@ export default function DataManagementPage() {
         </Paper>
       </Box>
 
-      {/* ── Import confirm dialog ──────────────────────────────────────────────────────────────────── */}
+      {/* ── Import confirm dialog ─────────────────────────────────────────────────────────────────── */}
       <Dialog open={confirmOpen} onClose={() => setConfirmOpen(false)} maxWidth="xs" fullWidth>
         <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <WarningAmber color="warning" /> Confirm Import
@@ -634,7 +634,7 @@ export default function DataManagementPage() {
         </DialogActions>
       </Dialog>
 
-      {/* ── Step 1: Archive-first prompt ─────────────────────────────────────────────────────────────── */}
+      {/* ── Step 1: Archive-first prompt ────────────────────────────────────────────────────────────────── */}
       <Dialog
         open={archivePromptOpen}
         onClose={() => setArchivePromptOpen(false)}
@@ -677,7 +677,7 @@ export default function DataManagementPage() {
         </DialogActions>
       </Dialog>
 
-      {/* ── Step 2: Final confirmation (type DELETE) ────────────────────────────────────────────────────────────────────── */}
+      {/* ── Step 2: Final confirmation (type DELETE) ─────────────────────────────────────────────────────────────── */}
       <Dialog
         open={finalConfirmOpen}
         onClose={() => setFinalConfirmOpen(false)}
