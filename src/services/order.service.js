@@ -12,6 +12,7 @@ import {
   runTransaction,
   query,
   where,
+  Timestamp,
 } from 'firebase/firestore';
 import { db } from '@/firebase';
 import { COLLECTIONS } from '@/config/constants';
@@ -26,28 +27,36 @@ const menuItemsRef = collection(db, COLLECTIONS.MENU_ITEMS);
 const counterRef = doc(db, 'system_counters', 'orders');
 
 const getNextOrderNumber = async () => {
-  return runTransaction(db, async (transaction) => {
+  const nextNumber = await runTransaction(db, async (transaction) => {
     const counterSnap = await transaction.get(counterRef);
-    const current = counterSnap.exists() ? (counterSnap.data().current || 0) : 0;
+    let current = 0;
+    if (counterSnap.exists()) {
+      current = counterSnap.data().current || 0;
+    }
     const next = current + 1;
     transaction.set(counterRef, { current: next }, { merge: true });
-    return String(next);
+    return next;
   });
+  return String(nextNumber);
 };
 
 export const createOrder = async (restaurantId, orderData, items) => {
   let resolvedRestaurantId = restaurantId;
   let resolvedOrderData = orderData;
   let resolvedItems = items;
+
   if (typeof restaurantId === 'object' && !Array.isArray(restaurantId)) {
     resolvedOrderData = restaurantId;
     resolvedItems = orderData;
     resolvedRestaurantId = restaurantId.restaurantId || '';
   }
+
   if (!Array.isArray(resolvedItems)) throw new Error('items must be an array');
+
   const batch = writeBatch(db);
   const orderNumber = await getNextOrderNumber();
   const affectedItemIds = [];
+
   const orderRef = doc(ordersRef);
   batch.set(orderRef, {
     restaurantId: resolvedRestaurantId || null,
@@ -69,29 +78,49 @@ export const createOrder = async (restaurantId, orderData, items) => {
     notes: resolvedOrderData.notes || '',
     coupon: resolvedOrderData.coupon || null,
     items: resolvedItems.map((it) => ({
-      menuItemId: it.menuItemId, name: it.name, quantity: it.quantity,
-      unitPrice: it.unitPrice, totalPrice: it.unitPrice * it.quantity,
+      menuItemId: it.menuItemId,
+      name: it.name,
+      quantity: it.quantity,
+      unitPrice: it.unitPrice,
+      totalPrice: it.unitPrice * it.quantity,
       specialInstructions: it.specialInstructions || '',
-      categoryId: it.categoryId || '', categoryName: it.categoryName || '',
+      categoryId: it.categoryId || '',
+      categoryName: it.categoryName || '',
     })),
-    createdAt: serverTimestamp(), updatedAt: serverTimestamp(), deletedAt: null,
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
+    deletedAt: null,
   });
+
   resolvedItems.forEach((item) => {
     const itemRef = doc(orderItemsRef);
     batch.set(itemRef, {
-      restaurantId: resolvedRestaurantId || null, orderId: orderRef.id,
-      menuItemId: item.menuItemId, name: item.name, quantity: item.quantity,
-      unitPrice: item.unitPrice, totalPrice: item.unitPrice * item.quantity,
+      restaurantId: resolvedRestaurantId || null,
+      orderId: orderRef.id,
+      menuItemId: item.menuItemId,
+      name: item.name,
+      quantity: item.quantity,
+      unitPrice: item.unitPrice,
+      totalPrice: item.unitPrice * item.quantity,
       specialInstructions: item.specialInstructions || '',
-      categoryId: item.categoryId || '', categoryName: item.categoryName || '',
-      createdAt: serverTimestamp(), deletedAt: null,
+      categoryId: item.categoryId || '',
+      categoryName: item.categoryName || '',
+      createdAt: serverTimestamp(),
+      deletedAt: null,
     });
+
     if (item.menuItemId) {
-      batch.update(doc(menuItemsRef, item.menuItemId), { stockLevel: increment(-(Number(item.quantity) || 0)), updatedAt: serverTimestamp() });
+      const menuRef = doc(menuItemsRef, item.menuItemId);
+      batch.update(menuRef, {
+        stockLevel: increment(-(Number(item.quantity) || 0)),
+        updatedAt: serverTimestamp(),
+      });
       affectedItemIds.push(item.menuItemId);
     }
   });
+
   await batch.commit();
+
   const uniqueIds = [...new Set(affectedItemIds)];
   if (uniqueIds.length > 0) {
     Promise.all(uniqueIds.map((id) => getDoc(doc(menuItemsRef, id))))
@@ -99,15 +128,22 @@ export const createOrder = async (restaurantId, orderData, items) => {
         const postBatch = writeBatch(db);
         let needsCommit = false;
         snaps.forEach((snap) => {
-          if (snap.exists() && (snap.data().stockLevel || 0) <= 0 && snap.data().isAvailable !== false) {
-            postBatch.update(doc(menuItemsRef, snap.id), { isAvailable: false, updatedAt: serverTimestamp() });
-            needsCommit = true;
+          if (snap.exists()) {
+            const data = snap.data();
+            if ((data.stockLevel || 0) <= 0 && data.isAvailable !== false) {
+              postBatch.update(doc(menuItemsRef, snap.id), {
+                isAvailable: false,
+                updatedAt: serverTimestamp(),
+              });
+              needsCommit = true;
+            }
           }
         });
         if (needsCommit) return postBatch.commit();
       })
-      .catch((err) => logger.warn('Post-order stock check failed:', err));
+      .catch((err) => logger.warn('Post-order stock check failed (non-critical):', err));
   }
+
   logger.info('Order created:', orderNumber);
   return { id: orderRef.id, orderNumber };
 };
@@ -115,16 +151,26 @@ export const createOrder = async (restaurantId, orderData, items) => {
 export const createPublicOrder = async (orderData) => {
   const orderNumber = await getNextOrderNumber();
   const docRef = await addDoc(ordersRef, {
-    restaurantId: orderData.restaurantId || null, orderNumber,
-    employeeId: 'public', customerName: orderData.customerName || '',
-    customerPhone: orderData.customerPhone || '', orderType: orderData.orderType || 'takeaway',
+    restaurantId: orderData.restaurantId || null,
+    orderNumber,
+    employeeId: 'public',
+    customerName: orderData.customerName || '',
+    customerPhone: orderData.customerPhone || '',
+    orderType: orderData.orderType || 'takeaway',
     deliveryAddress: orderData.deliveryAddress || '',
-    subtotal: orderData.subtotal || 0, tax: orderData.tax || 0,
-    discount: orderData.discount || 0, total: orderData.total || 0,
-    paymentMethod: orderData.paymentMethod || 'cash', paymentStatus: 'pending',
-    status: 'pending', notes: orderData.notes || '', coupon: orderData.coupon || null,
-    items: orderData.items || [], deletedAt: null,
-    createdAt: serverTimestamp(), updatedAt: serverTimestamp(),
+    subtotal: orderData.subtotal || 0,
+    tax: orderData.tax || 0,
+    discount: orderData.discount || 0,
+    total: orderData.total || 0,
+    paymentMethod: orderData.paymentMethod || 'cash',
+    paymentStatus: 'pending',
+    status: 'pending',
+    notes: orderData.notes || '',
+    coupon: orderData.coupon || null,
+    items: orderData.items || [],
+    deletedAt: null,
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
   });
   return { id: docRef.id, orderNumber, total: orderData.total, status: 'pending' };
 };
@@ -136,65 +182,204 @@ export const getOrderById = async (orderId) => {
 };
 
 export const updateOrder = async (orderId, data) => {
-  await updateDoc(doc(ordersRef, orderId), { ...data, updatedAt: serverTimestamp() });
+  await updateDoc(doc(ordersRef, orderId), {
+    ...data,
+    updatedAt: serverTimestamp(),
+  });
 };
 
 export const updateOrderStatus = async (orderId, status) => {
   const update = { status, updatedAt: serverTimestamp() };
-  if (status === 'served' || status === 'completed') update.completedAt = serverTimestamp();
-  else if (status === 'delivered') update.deliveredAt = serverTimestamp();
-  else if (status === 'out_for_delivery') update.outForDeliveryAt = serverTimestamp();
+
+  if (status === 'served' || status === 'completed') {
+    update.completedAt = serverTimestamp();
+  } else if (status === 'delivered') {
+    update.deliveredAt = serverTimestamp();
+  } else if (status === 'out_for_delivery') {
+    update.outForDeliveryAt = serverTimestamp();
+  }
+
   if (status === 'cancelled') {
     const orderSnap = await getDoc(doc(ordersRef, orderId));
     if (orderSnap.exists()) {
       const order = orderSnap.data();
-      if (!['served', 'completed', 'refunded'].includes(order.status) && order.items?.length) {
+      const prevStatus = order.status;
+      const noRestoreFrom = ['served', 'completed', 'refunded'];
+      if (!noRestoreFrom.includes(prevStatus) && order.items?.length) {
         const batch = writeBatch(db);
         order.items.forEach((item) => {
-          if (item.menuItemId) batch.update(doc(menuItemsRef, item.menuItemId), { stockLevel: increment(Number(item.quantity) || 0), isAvailable: true, updatedAt: serverTimestamp() });
+          if (item.menuItemId) {
+            batch.update(doc(menuItemsRef, item.menuItemId), {
+              stockLevel: increment(Number(item.quantity) || 0),
+              isAvailable: true,
+              updatedAt: serverTimestamp(),
+            });
+          }
         });
         await batch.commit();
       }
     }
   }
+
   await updateDoc(doc(ordersRef, orderId), update);
 };
 
 export const updatePaymentStatus = async (orderId, paymentStatus) => {
-  await updateDoc(doc(ordersRef, orderId), { paymentStatus, updatedAt: serverTimestamp() });
+  await updateDoc(doc(ordersRef, orderId), {
+    paymentStatus,
+    updatedAt: serverTimestamp(),
+  });
+};
+
+export const removeOrderItem = async (orderId, itemIndex) => {
+  const orderSnap = await getDoc(doc(ordersRef, orderId));
+  if (!orderSnap.exists()) {
+    throw new Error('Order not found');
+  }
+
+  const order = orderSnap.data();
+  const newItems = order.items.filter((_, i) => i !== itemIndex);
+
+  if (newItems.length === 0) {
+    throw new Error('Cannot remove the last item from an order');
+  }
+
+  const removedItem = order.items[itemIndex];
+  const newSubtotal = order.subtotal - (removedItem.totalPrice || removedItem.unitPrice * removedItem.quantity);
+
+  let newDiscount = order.discount;
+  let newTotal = newSubtotal - newDiscount;
+  if (newTotal < 0) newTotal = 0;
+
+  if (removedItem.menuItemId && order.status !== 'served' && order.status !== 'completed') {
+    await updateDoc(doc(menuItemsRef, removedItem.menuItemId), {
+      stockLevel: increment(Number(removedItem.quantity) || 0),
+      updatedAt: serverTimestamp(),
+    });
+  }
+
+  await updateDoc(doc(ordersRef, orderId), {
+    items: newItems,
+    subtotal: Math.max(0, newSubtotal),
+    total: Math.max(0, newTotal),
+    updatedAt: serverTimestamp(),
+  });
+
+  logger.info(`Item ${itemIndex} removed from order ${orderId}`);
+  return { newItems, newSubtotal, newTotal };
 };
 
 export const deleteOrder = async (restaurantId, orderId, deletedBy, deletionReason = '') => {
-  await softDelete(db, COLLECTIONS.ORDERS, orderId, deletedBy, deletionReason, restaurantId);
-  await logActivity({ type: 'AUTH', action: 'DELETE', userId: deletedBy, details: `Order ${orderId} deleted` });
-  logger.info(`Order ${orderId} deleted by ${deletedBy}`);
+  try {
+    const orderSnap = await getDoc(doc(ordersRef, orderId));
+    const order = orderSnap.exists() ? orderSnap.data() : null;
+
+    await softDelete(db, COLLECTIONS.ORDERS, orderId, deletedBy, deletionReason, restaurantId);
+
+    await logActivity(restaurantId, 'DELETE', {
+      userId: deletedBy,
+      entityType: 'order',
+      entityId: orderId,
+      details: order ? {
+        orderNumber: order.orderNumber,
+        total: order.total,
+        status: order.status,
+        customerName: order.customerName
+      } : {},
+      status: 'success',
+    });
+
+    logger.info(`Order ${orderId} deleted by ${deletedBy}`);
+  } catch (err) {
+    await logActivity(restaurantId, 'DELETE', {
+      userId: deletedBy,
+      entityType: 'order',
+      entityId: orderId,
+      status: 'failure',
+      error: err.message,
+    }).catch((logErr) => logger.warn('Failed to log delete error:', logErr));
+
+    throw err;
+  }
 };
 
 export const restoreOrder = async (orderId, restoredBy) => {
-  await updateDoc(doc(ordersRef, orderId), { deletedAt: null, restoredAt: serverTimestamp(), restoredBy });
+  const docRef = doc(ordersRef, orderId);
+  await updateDoc(docRef, {
+    deletedAt: null,
+    restoredAt: serverTimestamp(),
+    restoredBy,
+  });
+  logger.info(`Order ${orderId} restored by ${restoredBy}`);
 };
 
 export const subscribeToOrders = (restaurantId, callback, daysBack = 30) => {
   let resolvedRestaurantId = restaurantId;
   let resolvedCallback = callback;
   let resolvedDaysBack = daysBack;
+
   if (typeof restaurantId === 'function') {
     resolvedCallback = restaurantId;
     resolvedDaysBack = typeof callback === 'number' ? callback : 30;
     resolvedRestaurantId = '';
   }
-  if (typeof resolvedCallback !== 'function') throw new Error('callback is required');
+
+  if (typeof resolvedCallback !== 'function') {
+    throw new Error('callback is required');
+  }
+
   const cutoff = new Date();
   cutoff.setDate(cutoff.getDate() - resolvedDaysBack);
-  const q = resolvedRestaurantId ? query(ordersRef, where('restaurantId', '==', resolvedRestaurantId)) : ordersRef;
+  const q = resolvedRestaurantId
+    ? query(ordersRef, where('restaurantId', '==', resolvedRestaurantId))
+    : ordersRef;
+
+  console.log('[subscribeToOrders] Setting up subscription, restaurantId:', resolvedRestaurantId || '(all)', 'daysBack:', resolvedDaysBack);
+
   return onSnapshot(q, (snapshot) => {
+    console.log('[subscribeToOrders] Raw docs:', snapshot.docs.length, 'restaurantId filter:', resolvedRestaurantId || '(none)');
     const orders = snapshot.docs
       .map((d) => ({ id: d.id, ...d.data() }))
       .filter((order) => !order.deletedAt)
-      .filter((order) => { const createdAt = order.createdAt?.toDate?.(); if (!createdAt) return true; return createdAt >= cutoff; })
-      .sort((a, b) => { const at = a.createdAt?.toDate?.() || new Date(); const bt = b.createdAt?.toDate?.() || new Date(); return bt - at; });
+      .filter((order) => {
+        const createdAt = order.createdAt?.toDate?.();
+        if (!createdAt) return true;
+        return createdAt >= cutoff;
+      })
+      .sort((a, b) => {
+        const at = a.createdAt?.toDate?.() || new Date();
+        const bt = b.createdAt?.toDate?.() || new Date();
+        return bt - at;
+      });
+    console.log('[subscribeToOrders] Filtered orders:', orders.length);
     resolvedCallback(orders);
-  }, (error) => { console.error('[subscribeToOrders] Firestore error:', error); resolvedCallback([]); });
+  }, (error) => {
+    console.error('[subscribeToOrders] Firestore error:', error);
+    resolvedCallback([]);
+  });
+};
+
+export const subscribeToDeletedOrders = (restaurantId, callback, daysBack = 90) => {
+  if (typeof callback !== 'function') throw new Error('callback is required');
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - daysBack);
+  const q = restaurantId
+    ? query(ordersRef, where('restaurantId', '==', restaurantId))
+    : ordersRef;
+  return onSnapshot(q, (snapshot) => {
+    const orders = snapshot.docs
+      .map((d) => ({ id: d.id, ...d.data() }))
+      .filter((order) => {
+        const deletedAt = order.deletedAt?.toDate?.();
+        return deletedAt && deletedAt >= cutoff;
+      })
+      .sort((a, b) => {
+        const at = a.deletedAt?.toDate?.() || new Date(0);
+        const bt = b.deletedAt?.toDate?.() || new Date(0);
+        return bt - at;
+      });
+    callback(orders);
+  });
 };
 
 export const subscribeToOrderById = (orderId, callback) => {

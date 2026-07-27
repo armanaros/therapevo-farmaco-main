@@ -8,6 +8,7 @@ const ordersRef = collection(db, COLLECTIONS.ORDERS);
 
 export const getReportData = async (startDate, endDate, restaurantId = '', useManilaTz = false) => {
   let start, end;
+  
   if (useManilaTz) {
     const range = getManilaDayRange(startDate instanceof Date ? startDate : new Date(startDate));
     start = range.start;
@@ -17,18 +18,34 @@ export const getReportData = async (startDate, endDate, restaurantId = '', useMa
     end = endDate instanceof Date ? endDate : new Date(endDate);
     end.setHours(23, 59, 59, 999);
   }
-  const q = query(ordersRef, where('createdAt', '>=', Timestamp.fromDate(start)), where('createdAt', '<=', Timestamp.fromDate(end)));
-  const allOrders = (await getDocs(q)).docs.map((d) => ({ id: d.id, ...d.data() }));
+
+  const q = query(
+    ordersRef,
+    where('createdAt', '>=', Timestamp.fromDate(start)),
+    where('createdAt', '<=', Timestamp.fromDate(end))
+  );
+  const allOrders = (await getDocs(q)).docs.map((d) => ({
+    id: d.id,
+    ...d.data(),
+  }));
+
   const filtered = allOrders.filter((o) => {
-    if (restaurantId && o.restaurantId && String(o.restaurantId) !== String(restaurantId)) return false;
+    if (restaurantId && o.restaurantId && String(o.restaurantId) !== String(restaurantId)) {
+      return false;
+    }
     const ref = o.deliveredAt?.toDate?.() || o.completedAt?.toDate?.() || o.createdAt?.toDate?.();
     if (!ref) return false;
     return ref >= start && ref <= end;
   });
-  const completed = filtered.filter((o) => ['served', 'completed', 'delivered'].includes(o.status));
+
+  const completed = filtered.filter((o) =>
+    ['served', 'completed', 'delivered'].includes(o.status)
+  );
+
   const totalRevenue = completed.reduce((sum, o) => sum + (o.total || 0), 0);
   const totalOrders = filtered.length;
   const avgOrder = totalOrders > 0 ? totalRevenue / totalOrders : 0;
+
   const salesByDay = {};
   completed.forEach((o) => {
     const ref = o.deliveredAt?.toDate?.() || o.completedAt?.toDate?.() || o.createdAt?.toDate?.();
@@ -38,6 +55,7 @@ export const getReportData = async (startDate, endDate, restaurantId = '', useMa
     salesByDay[key].revenue += o.total || 0;
     salesByDay[key].orders += 1;
   });
+
   const itemCounts = {};
   completed.forEach((o) => {
     o.items?.forEach((item) => {
@@ -47,23 +65,71 @@ export const getReportData = async (startDate, endDate, restaurantId = '', useMa
       itemCounts[key].revenue += (item.unitPrice || 0) * (item.quantity || 0);
     });
   });
-  const topItems = Object.values(itemCounts).sort((a, b) => b.quantity - a.quantity).slice(0, 10);
+  const topItems = Object.values(itemCounts)
+    .sort((a, b) => b.quantity - a.quantity)
+    .slice(0, 10);
+
   const ordersByType = {};
-  completed.forEach((o) => { const type = o.orderType || 'unknown'; ordersByType[type] = (ordersByType[type] || 0) + 1; });
+  completed.forEach((o) => {
+    const type = o.orderType || 'unknown';
+    ordersByType[type] = (ordersByType[type] || 0) + 1;
+  });
+
   const ordersByPayment = {};
-  completed.forEach((o) => { const method = o.paymentMethod || 'unknown'; ordersByPayment[method] = (ordersByPayment[method] || 0) + 1; });
+  completed.forEach((o) => {
+    const method = o.paymentMethod || 'unknown';
+    ordersByPayment[method] = (ordersByPayment[method] || 0) + 1;
+  });
+
   const ordersByStatus = {};
-  filtered.forEach((o) => { const status = o.status || 'pending'; ordersByStatus[status] = (ordersByStatus[status] || 0) + 1; });
-  const cancelledOrders = filtered.filter((o) => o.status === 'cancelled').map((o) => ({ id: o.id, orderNumber: o.orderNumber || o.id.slice(-6).toUpperCase(), total: o.total || 0, cancelReason: o.cancelReason || '', createdAt: o.createdAt?.toDate?.() || null, orderType: o.orderType || '' })).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+  filtered.forEach((o) => {
+    const status = o.status || 'pending';
+    ordersByStatus[status] = (ordersByStatus[status] || 0) + 1;
+  });
+
+  const cancelledOrders = filtered
+    .filter((o) => o.status === 'cancelled')
+    .map((o) => ({
+      id: o.id,
+      orderNumber: o.orderNumber || o.id.slice(-6).toUpperCase(),
+      total: o.total || 0,
+      cancelReason: o.cancelReason || o.cancellationReason || '',
+      createdAt: o.createdAt?.toDate?.() || null,
+      orderType: o.orderType || '',
+    }))
+    .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+
   const salesByHour = Array.from({ length: 24 }, (_, h) => ({ hour: h, revenue: 0, orders: 0 }));
-  completed.forEach((o) => { const ref = o.deliveredAt?.toDate?.() || o.completedAt?.toDate?.() || o.createdAt?.toDate?.(); if (!ref) return; salesByHour[ref.getHours()].revenue += o.total || 0; salesByHour[ref.getHours()].orders += 1; });
+  completed.forEach((o) => {
+    const ref = o.deliveredAt?.toDate?.() || o.completedAt?.toDate?.() || o.createdAt?.toDate?.();
+    if (!ref) return;
+    const h = ref.getHours();
+    salesByHour[h].revenue += o.total || 0;
+    salesByHour[h].orders += 1;
+  });
+
   let totalExpenses = 0;
   let expensesList = [];
-  try { expensesList = await getExpensesByDateRange(start, end); totalExpenses = expensesList.reduce((s, e) => s + (e.amount || 0), 0); } catch { /* non-critical */ }
+  try {
+    expensesList = await getExpensesByDateRange(start, end);
+    totalExpenses = expensesList.reduce((s, e) => s + (e.amount || 0), 0);
+  } catch {
+    // non-critical
+  }
+
   return {
-    totalRevenue, totalOrders, avgOrder, totalExpenses, netProfit: totalRevenue - totalExpenses,
+    totalRevenue,
+    totalOrders,
+    avgOrder,
+    totalExpenses,
+    netProfit: totalRevenue - totalExpenses,
     salesByDay: Object.values(salesByDay).sort((a, b) => a.date.localeCompare(b.date)),
-    salesByHour, topItems, ordersByType, ordersByPayment, ordersByStatus, cancelledOrders,
+    salesByHour,
+    topItems,
+    ordersByType,
+    ordersByPayment,
+    ordersByStatus,
+    cancelledOrders,
     cancelled: filtered.filter((o) => o.status === 'cancelled').length,
   };
 };

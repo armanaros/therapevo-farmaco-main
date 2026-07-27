@@ -7,7 +7,7 @@ import { collection, onSnapshot, query, where, updateDoc, doc } from 'firebase/f
 import { COLLECTIONS } from '@/config/constants';
 import { formatCurrency } from '@/utils/formatters';
 
-// ── Installment helpers (mirrors AccountsReceivablePage) ─────────────────────────────────────
+// ── Installment helpers (mirrors AccountsReceivablePage) ─────────────────────
 const _instPaid = (amountPaid, installmentAmount) => {
   if (!installmentAmount || installmentAmount <= 0) return null;
   return Math.floor((amountPaid || 0) / installmentAmount);
@@ -45,14 +45,12 @@ export const NotificationProvider = ({ children }) => {
   });
   const [dismissedStockIds, setDismissedStockIds] = useState([]);
 
-  // Generate system alerts based on current state
   useEffect(() => {
     const alerts = [];
     const now = new Date();
     const todayStr = now.toISOString().slice(0, 10);
     const hour = now.getHours();
 
-    // Peak hour reminder
     if ((hour >= 11 && hour <= 13) || (hour >= 18 && hour <= 20)) {
       alerts.push({
         id: 'peak-hour',
@@ -63,7 +61,6 @@ export const NotificationProvider = ({ children }) => {
       });
     }
 
-    // Low stock warning (aggregate)
     if (lowStockItems.length > 3) {
       alerts.push({
         id: 'low-stock-critical',
@@ -74,12 +71,10 @@ export const NotificationProvider = ({ children }) => {
       });
     }
 
-    // Upcoming / overdue payment alerts (within 5 days) — installment plans AND plain credit terms
     const upcoming = [];
     arRecords.forEach((r) => {
       if (r.status === 'paid' || r.status === 'cancelled' || r.status === 'rejected') return;
 
-      // ── Case 1: has a full installment plan ──────────────────────────────────────────────────
       if (r.installmentTotal) {
         const ip = _instPaid(r.amountPaid, r.installmentAmount);
         if (ip == null || ip >= r.installmentTotal) return;
@@ -101,7 +96,6 @@ export const NotificationProvider = ({ children }) => {
         return;
       }
 
-      // ── Case 2: no installment plan but has firstInstallmentDue ───────────────────────────
       if (r.firstInstallmentDue && !r.amountPaid) {
         const fd = r.firstInstallmentDue?.toDate ? r.firstInstallmentDue.toDate() : new Date(r.firstInstallmentDue);
         const daysUntil = Math.ceil((fd - now) / 86400000);
@@ -120,7 +114,6 @@ export const NotificationProvider = ({ children }) => {
         return;
       }
 
-      // ── Case 3: plain credit term with only an overall dueDate ───────────────────────────
       if (r.dueDate) {
         const dd = r.dueDate?.toDate ? r.dueDate.toDate() : new Date(r.dueDate);
         const daysUntil = Math.ceil((dd - now) / 86400000);
@@ -140,12 +133,10 @@ export const NotificationProvider = ({ children }) => {
     });
     setUpcomingInstallments(upcoming);
 
-    // Filter out dismissed alerts
     const activeAlerts = alerts.filter((a) => !dismissedAlerts.includes(a.id));
     setSystemAlerts(activeAlerts);
   }, [lowStockItems, dismissedAlerts, arRecords]);
 
-  // Subscribe to AR records to watch for upcoming installments
   useEffect(() => {
     if (!isAuthenticated) return;
     const unsub = onSnapshot(collection(db, COLLECTIONS.ACCOUNTS_RECEIVABLE), (snap) => {
@@ -154,7 +145,6 @@ export const NotificationProvider = ({ children }) => {
     return unsub;
   }, [isAuthenticated]);
 
-  // Subscribe to personal (per-user) notifications
   useEffect(() => {
     if (!isAuthenticated || !user?.uid) return;
     const q = query(
@@ -182,11 +172,9 @@ export const NotificationProvider = ({ children }) => {
 
   useEffect(() => {
     if (!isAuthenticated || !isManagement?.()) return;
-
     const unsubscribe = subscribeToLowStockItems((items) => {
       setLowStockItems(items);
     });
-
     return () => unsubscribe();
   }, [isAuthenticated, isManagement]);
 
@@ -227,7 +215,6 @@ export const NotificationProvider = ({ children }) => {
   }, []);
 
   const visibleStockItems = lowStockItems.filter((item) => !dismissedStockIds.includes(item.id));
-
   const totalAlertCount = visibleStockItems.length + systemAlerts.length + (hasUnread ? 1 : 0) + userNotifications.length;
 
   const value = {
