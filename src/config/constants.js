@@ -85,7 +85,7 @@ export const COLLECTIONS = {
   PRODUCT_CATEGORIES: 'product_categories',
   PRODUCTS: 'products',
   INVENTORY: 'inventory',
-  INVENTORY_MOVEMENTS: 'inventory_movements',
+  INVENTORY_MOVEMENTS: 'inventory_movements',  // Pharma stock ledger — every in/out logged here
   BATCHES: 'batches',
   WAREHOUSES: 'warehouses',
   EXPENSES: 'expenses',
@@ -115,7 +115,7 @@ export const COLLECTIONS = {
   OPERATIONS: 'operations',
 };
 
-// ─── Transaction / Order types for POS ──────────────────────────────────────
+// ─── Transaction / Order types for POS ────────────────────────────────────────────
 export const ORDER_TYPES = {
   WALK_IN:     'walk_in',
   DISTRIBUTOR: 'distributor',

@@ -5,6 +5,7 @@ export const palette = {
     dark: '#15803D',
     contrastText: '#ffffff',
   },
+  // Pharmaceutical teal — replaces red; used for secondary actions, info chips, avatars
   secondary: {
     main: '#0891B2',
     light: '#22D3EE',
@@ -12,12 +13,12 @@ export const palette = {
     contrastText: '#ffffff',
   },
   background: {
-    default: '#F3F6F5',
+    default: '#F3F6F5',   // subtle clinical cool-green tint
     paper: '#FFFFFF',
   },
   text: {
-    primary: '#0F1923',
-    secondary: '#4B6B5D',
+    primary: '#0F1923',   // near-black — high legibility for data-dense screens
+    secondary: '#4B6B5D', // muted green-gray — cohesive with pharma palette
   },
   divider: 'rgba(15,25,35,0.09)',
   success: { main: '#16A34A', light: '#22C55E', dark: '#15803D' },
